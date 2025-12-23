@@ -826,12 +826,30 @@ const restoreDraft = () => {
 };
 
 /**
+ * Check authentication and redirect if not logged in
+ * @returns {boolean} True if authenticated, false otherwise
+ */
+const checkAuth = () => {
+  if (!storage.isAuthenticated()) {
+    // Redirect to login page
+    window.location.href = './auth/login.html';
+    return false;
+  }
+  return true;
+};
+
+/**
  * Initialize the application
  */
 const init = async () => {
   // Check storage availability
   if (!storage.isStorageAvailable()) {
     console.warn('localStorage is not available. Data will not persist.');
+  }
+  
+  // Check authentication first - redirect to login if not authenticated
+  if (!checkAuth()) {
+    return; // Stop initialization if not authenticated
   }
   
   // Initialize themes

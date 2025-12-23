@@ -67,8 +67,8 @@ const showSection = (sectionId) => {
       }
       break;
     case 'logout':
-      // Handle logout - redirect to login page
-      window.location.href = './auth/login.html';
+      // Handle logout - clear auth and redirect to login page
+      handleLogout();
       return;
   }
   
@@ -265,9 +265,37 @@ const setupEventListeners = () => {
 };
 
 /**
+ * Check authentication and redirect if not logged in
+ * @returns {boolean} True if authenticated, false otherwise
+ */
+const checkAuth = () => {
+  if (!storage.isAuthenticated()) {
+    window.location.href = './auth/login.html';
+    return false;
+  }
+  return true;
+};
+
+/**
+ * Handle logout action
+ */
+const handleLogout = () => {
+  // Clear authentication
+  storage.clearAuth();
+  
+  // Redirect to login page
+  window.location.href = './auth/login.html';
+};
+
+/**
  * Initialize the settings page
  */
 const init = async () => {
+  // Check authentication first
+  if (!checkAuth()) {
+    return;
+  }
+  
   // Initialize themes first
   themes.initializeThemes();
   

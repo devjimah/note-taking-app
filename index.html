@@ -11,6 +11,21 @@
     />
     <link rel="stylesheet" href="./css/styles.css" />
     <title>Notes | Note-taking web app</title>
+    <!-- Early auth check to prevent flash of content before redirect -->
+    <script>
+      (function () {
+        try {
+          const auth = JSON.parse(
+            localStorage.getItem("notes_app_auth") || "null"
+          );
+          if (!auth || !auth.isLoggedIn) {
+            window.location.replace("./auth/login.html");
+          }
+        } catch (e) {
+          window.location.replace("./auth/login.html");
+        }
+      })();
+    </script>
   </head>
   <body>
     <div class="app" id="app">
