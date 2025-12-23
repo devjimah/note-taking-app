@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="../assets/images/favicon-32x32.png"
+    />
+    <link rel="stylesheet" href="../css/styles.css" />
+    <title>Login | Notes</title>
+    <script>
+      // Apply saved theme immediately to prevent FOUC
+      (function () {
+        try {
+          const prefs = JSON.parse(
+            localStorage.getItem("notes_preferences") || "{}"
+          );
+          let theme = prefs.colorTheme || "light";
+          if (theme === "system") {
+            theme = window.matchMedia("(prefers-color-scheme: dark)").matches
+              ? "dark"
+              : "light";
+          }
+          document.documentElement.setAttribute("data-theme", theme);
+          document.documentElement.setAttribute(
+            "data-font",
+            prefs.fontTheme || "sans-serif"
+          );
+        } catch (e) {
+          document.documentElement.setAttribute("data-theme", "light");
+          document.documentElement.setAttribute("data-font", "sans-serif");
+        }
+      })();
+    </script>
+  </head>
+  <body>
+    <div class="auth-page">
+      <div class="auth-card">
+        <!-- Logo -->
+        <div class="auth-card__logo">
+          <img src="../assets/images/logo.svg" alt="Notes Logo" class="logo" />
+        </div>
+
+        <!-- Header Text -->
+        <div class="auth-card__header">
+          <h1 class="auth-card__title">Welcome to Note</h1>
+          <p class="auth-card__subtitle">Please log in to continue</p>
+        </div>
+
+        <!-- Login Form -->
+        <form class="auth-form" id="loginForm">
+          <!-- Email Field -->
+          <div class="form-group">
+            <label for="email" class="form-label">Email Address</label>
+            <div class="form-field">
+              <input
+                type="email"
+                id="email"
+                name="email"
+                class="form-input"
+                placeholder="email@example.com"
+                required
+                autocomplete="email"
+              />
+            </div>
+          </div>
+
+          <!-- Password Field -->
+          <div class="form-group">
+            <div class="form-label-row">
+              <label for="password" class="form-label">Password</label>
+              <a href="./forgot-password.html" class="form-link">Forgot</a>
+            </div>
+            <div class="form-field form-field--password">
+              <input
+                type="password"
+                id="password"
+                name="password"
+                class="form-input"
+                placeholder=""
+                required
+                autocomplete="current-password"
+              />
+              <button
+                type="button"
+                class="password-toggle"
+                aria-label="Show password"
+                data-toggle-password
+              >
+                <img
+                  src="../assets/images/icon-show-password.svg"
+                  alt=""
+                  class="password-toggle__icon password-toggle__icon--show"
+                  aria-hidden="true"
+                />
+                <img
+                  src="../assets/images/icon-hide-password.svg"
+                  alt=""
+                  class="password-toggle__icon password-toggle__icon--hide"
+                  aria-hidden="true"
+                  hidden
+                />
+              </button>
+            </div>
+          </div>
+
+          <!-- Submit Button -->
+          <button type="submit" class="btn btn--primary btn--full btn--large">
+            Login
+          </button>
+        </form>
+
+        <!-- Divider with Social Login -->
+        <div class="auth-divider">
+          <p class="auth-divider__text">Or log in with:</p>
+          <button type="button" class="btn btn--social">
+            <img
+              src="../assets/images/icon-google.svg"
+              alt=""
+              class="btn__icon"
+              aria-hidden="true"
+            />
+            <span>Google</span>
+          </button>
+        </div>
+
+        <!-- Signup Link -->
+        <div class="auth-footer">
+          <p class="auth-footer__text">
+            No account yet?
+            <a href="./signup.html" class="auth-footer__link">Sign Up</a>
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <script type="module" src="../js/auth.js"></script>
+  </body>
+</html>

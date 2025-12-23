@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light" data-font="sans-serif">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="./assets/images/favicon-32x32.png"
+    />
+    <link rel="stylesheet" href="./css/styles.css" />
+    <title>Notes | Note-taking web app</title>
+  </head>
+  <body>
+    <div class="app" id="app">
+      <!-- Desktop Sidebar Navigation -->
+      <aside class="sidebar sidebar--nav" id="sidebarNav">
+        <div class="sidebar__logo">
+          <img src="./assets/images/logo.svg" alt="Notes Logo" class="logo" />
+        </div>
+        <nav class="sidebar__nav" aria-label="Main navigation">
+          <ul class="nav-list">
+            <li class="nav-list__item">
+              <button
+                class="nav-link nav-link--active"
+                data-view="all"
+                aria-current="page"
+              >
+                <img
+                  src="./assets/images/icon-home.svg"
+                  alt=""
+                  class="nav-link__icon"
+                  aria-hidden="true"
+                />
+                <span class="nav-link__text">All Notes</span>
+                <img
+                  src="./assets/images/icon-chevron-right.svg"
+                  alt=""
+                  class="nav-link__chevron"
+                  aria-hidden="true"
+                />
+              </button>
+            </li>
+            <li class="nav-list__item">
+              <button class="nav-link" data-view="archived">
+                <img
+                  src="./assets/images/icon-archive.svg"
+                  alt=""
+                  class="nav-link__icon"
+                  aria-hidden="true"
+                />
+                <span class="nav-link__text">Archived Notes</span>
+              </button>
+            </li>
+          </ul>
+          <div class="divider"></div>
+          <div class="tags-section">
+            <span class="tags-section__title">Tags</span>
+            <ul class="tag-list" id="tagList" aria-label="Filter by tag">
+              <!-- Tags will be rendered dynamically -->
+            </ul>
+          </div>
+        </nav>
+      </aside>
+
+      <!-- Main Content Area -->
+      <main class="main-content" id="mainContent">
+        <!-- Page Header -->
+        <header class="page-header">
+          <h1 class="page-header__title" id="pageTitle">All Notes</h1>
+          <div class="page-header__actions">
+            <div class="search-box">
+              <img
+                src="./assets/images/icon-search.svg"
+                alt=""
+                class="search-box__icon"
+                aria-hidden="true"
+              />
+              <input
+                type="search"
+                class="search-box__input"
+                id="searchInput"
+                placeholder="Search by title, content, or tags…"
+                aria-label="Search notes"
+              />
+            </div>
+            <a
+              href="./settings.html"
+              class="btn btn--icon"
+              aria-label="Settings"
+            >
+              <img
+                src="./assets/images/icon-settings.svg"
+                alt=""
+                aria-hidden="true"
+              />
+            </a>
+          </div>
+        </header>
+
+        <!-- Notes List Sidebar -->
+        <aside class="sidebar sidebar--notes" id="sidebarNotes">
+          <button class="btn btn--primary btn--full" id="createNoteBtn">
+            <img
+              src="./assets/images/icon-plus.svg"
+              alt=""
+              aria-hidden="true"
+            />
+            <span> Create New Note</span>
+          </button>
+          <div
+            class="notes-list"
+            id="notesList"
+            role="list"
+            aria-label="Notes list"
+          >
+            <!-- Notes will be rendered dynamically -->
+          </div>
+        </aside>
+
+        <!-- Note Editor -->
+        <article class="note-editor" id="noteEditor" aria-label="Note editor">
+          <!-- Mobile/Tablet Note Header (shown when viewing a note) -->
+          <header class="mobile-note-header" id="mobileNoteHeader" hidden>
+            <button class="mobile-note-header__back" id="goBackBtn">
+              <img
+                src="./assets/images/icon-arrow-left.svg"
+                alt=""
+                aria-hidden="true"
+              />
+              <span>Go Back</span>
+            </button>
+            <div class="mobile-note-header__actions">
+              <button
+                class="mobile-note-header__action-btn"
+                id="mobileDeleteBtn"
+                aria-label="Delete note"
+              >
+                <img
+                  src="./assets/images/icon-delete.svg"
+                  alt=""
+                  aria-hidden="true"
+                />
+              </button>
+              <button
+                class="mobile-note-header__action-btn"
+                id="mobileArchiveBtn"
+                aria-label="Archive note"
+              >
+                <img
+                  src="./assets/images/icon-archive.svg"
+                  alt=""
+                  aria-hidden="true"
+                />
+              </button>
+              <button class="mobile-note-header__text-btn" id="mobileCancelBtn">
+                Cancel
+              </button>
+              <button
+                class="mobile-note-header__text-btn mobile-note-header__text-btn--primary"
+                id="mobileSaveBtn"
+              >
+                Save Note
+              </button>
+            </div>
+          </header>
+
+          <!-- Mobile Notes List (shown only on mobile/tablet) -->
+          <div
+            class="notes-list notes-list--inline"
+            id="mobileNotesList"
+            role="list"
+            aria-label="Notes list"
+          >
+            <!-- Notes will be rendered dynamically on mobile -->
+          </div>
+
+          <!-- Empty State -->
+          <div class="empty-state" id="emptyState">
+            <p class="empty-state__text">
+              Select a note from the sidebar to view and edit, or create a new
+              note.
+            </p>
+          </div>
+
+          <!-- Note Content (hidden by default) -->
+          <div class="note-content" id="noteContent" hidden>
+            <div class="note-content__header">
+              <input
+                type="text"
+                class="note-content__title"
+                id="noteTitle"
+                placeholder="Enter a title…"
+                aria-label="Note title"
+              />
+            </div>
+            <div class="note-content__meta">
+              <div class="meta-item">
+                <div class="meta-item__name">
+                  <img
+                    src="./assets/images/icon-tag.svg"
+                    alt=""
+                    class="meta-item__icon"
+                    aria-hidden="true"
+                  />
+                  <span class="meta-item__label">Tags</span>
+                </div>
+                <input
+                  type="text"
+                  class="meta-item__input"
+                  id="noteTags"
+                  placeholder="Add tags separated by commas"
+                  aria-label="Note tags"
+                />
+              </div>
+              <div class="meta-item">
+                <div class="meta-item__name">
+                  <img
+                    src="./assets/images/icon-clock.svg"
+                    alt=""
+                    class="meta-item__icon"
+                    aria-hidden="true"
+                  />
+                  <span class="meta-item__label">Last edited</span>
+                </div>
+                <span class="meta-item__value" id="noteLastEdited">—</span>
+              </div>
+            </div>
+            <div class="divider"></div>
+            <textarea
+              class="note-content__body"
+              id="noteBody"
+              placeholder="Start typing your note here…"
+              aria-label="Note content"
+            ></textarea>
+            <div class="divider"></div>
+            <div class="note-content__actions">
+              <button class="btn btn--primary" id="saveNoteBtn">
+                Save Note
+              </button>
+              <button class="btn btn--secondary" id="cancelNoteBtn">
+                Cancel
+              </button>
+            </div>
+          </div>
+        </article>
+
+        <!-- Right Sidebar Actions -->
+        <aside class="sidebar sidebar--actions" id="sidebarActions" hidden>
+          <button class="btn btn--outline btn--full" id="archiveNoteBtn">
+            <img
+              src="./assets/images/icon-archive.svg"
+              alt=""
+              aria-hidden="true"
+            />
+            <span>Archive Note</span>
+          </button>
+          <button class="btn btn--outline btn--full" id="deleteNoteBtn">
+            <img
+              src="./assets/images/icon-delete.svg"
+              alt=""
+              aria-hidden="true"
+            />
+            <span>Delete Note</span>
+          </button>
+        </aside>
+      </main>
+
+      <!-- Mobile Bottom Navigation -->
+      <nav class="mobile-nav" id="mobileNav" aria-label="Mobile navigation">
+        <button
+          class="mobile-nav__item mobile-nav__item--active"
+          data-view="all"
+        >
+          <img src="./assets/images/icon-home.svg" alt="" aria-hidden="true" />
+          <span>Home</span>
+        </button>
+        <div class="mobile-nav__divider" aria-hidden="true"></div>
+        <button class="mobile-nav__item" data-action="search">
+          <img
+            src="./assets/images/icon-search.svg"
+            alt=""
+            aria-hidden="true"
+          />
+          <span>Search</span>
+        </button>
+        <div class="mobile-nav__divider" aria-hidden="true"></div>
+        <button class="mobile-nav__item" data-view="archived">
+          <img
+            src="./assets/images/icon-archive.svg"
+            alt=""
+            aria-hidden="true"
+          />
+          <span>Archived</span>
+        </button>
+        <div class="mobile-nav__divider" aria-hidden="true"></div>
+        <button class="mobile-nav__item" data-action="tags">
+          <img src="./assets/images/icon-tag.svg" alt="" aria-hidden="true" />
+          <span>Tags</span>
+        </button>
+        <div class="mobile-nav__divider" aria-hidden="true"></div>
+        <a href="./settings.html" class="mobile-nav__item">
+          <img
+            src="./assets/images/icon-settings.svg"
+            alt=""
+            aria-hidden="true"
+          />
+          <span>Settings</span>
+        </a>
+      </nav>
+
+      <!-- Mobile FAB (Floating Action Button) -->
+      <button class="fab" id="fabCreateNote" aria-label="Create new note">
+        <img src="./assets/images/icon-plus.svg" alt="" aria-hidden="true" />
+      </button>
+
+      <!-- Mobile Search Overlay -->
+      <div class="overlay overlay--search" id="searchOverlay" hidden>
+        <div class="overlay__header">
+          <button
+            class="btn btn--icon"
+            id="closeSearchBtn"
+            aria-label="Close search"
+          >
+            <img
+              src="./assets/images/icon-arrow-left.svg"
+              alt=""
+              aria-hidden="true"
+            />
+          </button>
+          <div class="search-box search-box--full">
+            <img
+              src="./assets/images/icon-search.svg"
+              alt=""
+              class="search-box__icon"
+              aria-hidden="true"
+            />
+            <input
+              type="search"
+              class="search-box__input"
+              id="mobileSearchInput"
+              placeholder="Search by title, content, or tags…"
+              aria-label="Search notes"
+            />
+          </div>
+        </div>
+        <div class="overlay__content" id="searchResults">
+          <!-- Search results will be rendered here -->
+        </div>
+      </div>
+
+      <!-- Mobile Tags Overlay -->
+      <div class="overlay overlay--tags" id="tagsOverlay" hidden>
+        <div class="overlay__header">
+          <button
+            class="btn btn--icon"
+            id="closeTagsBtn"
+            aria-label="Close tags"
+          >
+            <img
+              src="./assets/images/icon-arrow-left.svg"
+              alt=""
+              aria-hidden="true"
+            />
+          </button>
+          <h2 class="overlay__title">Tags</h2>
+        </div>
+        <div class="overlay__content">
+          <ul class="tag-list tag-list--mobile" id="mobileTagList">
+            <!-- Tags will be rendered dynamically -->
+          </ul>
+        </div>
+      </div>
+
+      <!-- Delete Confirmation Modal -->
+      <div
+        class="modal"
+        id="deleteModal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="deleteModalTitle"
+        hidden
+      >
+        <div class="modal__backdrop" data-close-modal></div>
+        <div class="modal__content">
+          <div class="modal__top">
+            <div class="modal__icon">
+              <img
+                src="./assets/images/icon-delete.svg"
+                alt=""
+                aria-hidden="true"
+              />
+            </div>
+            <div class="modal__body">
+              <h2 class="modal__title" id="deleteModalTitle">Delete Note</h2>
+              <p class="modal__text">
+                Are you sure you want to permanently delete this note? This
+                action cannot be undone.
+              </p>
+            </div>
+          </div>
+          <div class="modal__divider"></div>
+          <div class="modal__actions">
+            <button class="btn btn--secondary" data-close-modal>Cancel</button>
+            <button class="btn btn--danger" id="confirmDeleteBtn">
+              Delete Note
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Archive Confirmation Modal -->
+      <div
+        class="modal"
+        id="archiveModal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="archiveModalTitle"
+        hidden
+      >
+        <div class="modal__backdrop" data-close-modal></div>
+        <div class="modal__content">
+          <div class="modal__top">
+            <div class="modal__icon">
+              <img
+                src="./assets/images/icon-archive.svg"
+                alt=""
+                aria-hidden="true"
+              />
+            </div>
+            <div class="modal__body">
+              <h2 class="modal__title" id="archiveModalTitle">Archive Note</h2>
+              <p class="modal__text">
+                Are you sure you want to archive this note? You can restore it
+                later from the Archived Notes section.
+              </p>
+            </div>
+          </div>
+          <div class="modal__divider"></div>
+          <div class="modal__actions">
+            <button class="btn btn--secondary" data-close-modal>Cancel</button>
+            <button class="btn btn--primary" id="confirmArchiveBtn">
+              Archive Note
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Toast Notification -->
+      <div class="toast" id="toast" role="alert" aria-live="polite" hidden>
+        <img
+          src="./assets/images/icon-check-circle.svg"
+          alt=""
+          class="toast__icon"
+          id="toastIcon"
+          aria-hidden="true"
+        />
+        <span class="toast__message" id="toastMessage"></span>
+        <a href="#" class="toast__link" id="toastLink" hidden></a>
+        <button
+          class="toast__close"
+          id="toastClose"
+          aria-label="Dismiss notification"
+        >
+          <img src="./assets/images/icon-cross.svg" alt="" aria-hidden="true" />
+        </button>
+      </div>
+    </div>
+
+    <!-- JavaScript Modules -->
+    <script type="module" src="./js/main.js"></script>
+  </body>
+</html>
