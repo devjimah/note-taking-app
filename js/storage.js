@@ -6,7 +6,8 @@
 const STORAGE_KEYS = {
   NOTES: 'notes_app_notes',
   PREFERENCES: 'notes_app_preferences',
-  DRAFT: 'notes_app_draft'
+  DRAFT: 'notes_app_draft',
+  AUTH: 'notes_app_auth'
 };
 
 /**
@@ -147,6 +148,69 @@ export const isStorageAvailable = () => {
     localStorage.removeItem(test);
     return true;
   } catch (error) {
+    return false;
+  }
+};
+
+// ============================================
+// Authentication Storage Functions
+// ============================================
+
+/**
+ * Save authentication state
+ * @param {Object} authData - Auth data { isLoggedIn: boolean, user: { email: string } }
+ */
+export const saveAuth = (authData) => {
+  try {
+    localStorage.setItem(STORAGE_KEYS.AUTH, JSON.stringify(authData));
+    return true;
+  } catch (error) {
+    console.error('Error saving auth:', error);
+    return false;
+  }
+};
+
+/**
+ * Load authentication state
+ * @returns {Object|null} Auth data or null
+ */
+export const loadAuth = () => {
+  try {
+    const auth = localStorage.getItem(STORAGE_KEYS.AUTH);
+    return auth ? JSON.parse(auth) : null;
+  } catch (error) {
+    console.error('Error loading auth:', error);
+    return null;
+  }
+};
+
+/**
+ * Check if user is authenticated
+ * @returns {boolean}
+ */
+export const isAuthenticated = () => {
+  const auth = loadAuth();
+  return auth?.isLoggedIn === true;
+};
+
+/**
+ * Get current user info
+ * @returns {Object|null} User object or null
+ */
+export const getCurrentUser = () => {
+  const auth = loadAuth();
+  return auth?.user || null;
+};
+
+/**
+ * Clear authentication (logout)
+ */
+export const clearAuth = () => {
+  try {
+    localStorage.removeItem(STORAGE_KEYS.AUTH);
+    return true;
+  } catch (error) {
+    console.error('Error clearing auth:', error);
     return false;
   }
 };

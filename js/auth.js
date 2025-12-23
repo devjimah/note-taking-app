@@ -4,6 +4,22 @@
  */
 
 import { initializeThemes } from './themes.js';
+import { saveAuth, isAuthenticated } from './storage.js';
+
+/**
+ * Check if user is already logged in and redirect to app
+ */
+const checkAlreadyLoggedIn = () => {
+  // Don't redirect if on logout action or reset password pages
+  const isLogoutAction = window.location.search.includes('logout=true');
+  const isResetPage = window.location.pathname.includes('reset-password');
+  
+  if (!isLogoutAction && !isResetPage && isAuthenticated()) {
+    window.location.href = '../index.html';
+    return true;
+  }
+  return false;
+};
 
 // Password toggle functionality
 const initPasswordToggles = () => {
@@ -33,6 +49,36 @@ const initPasswordToggles = () => {
   });
 };
 
+/**
+ * Show form error message
+ * @param {HTMLElement} form - Form element
+ * @param {string} message - Error message
+ */
+const showFormError = (form, message) => {
+  // Remove existing error
+  const existingError = form.querySelector('.form-error');
+  if (existingError) existingError.remove();
+  
+  // Create error element
+  const errorEl = document.createElement('div');
+  errorEl.className = 'form-error';
+  errorEl.textContent = message;
+  errorEl.style.cssText = 'color: var(--color-danger, #dc2626); font-size: 0.875rem; margin-bottom: 1rem; text-align: center;';
+  
+  // Insert at top of form
+  form.insertBefore(errorEl, form.firstChild);
+};
+
+/**
+ * Validate email format
+ * @param {string} email - Email to validate
+ * @returns {boolean}
+ */
+const isValidEmail = (email) => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+};
+
 // Form validation and submission
 const initForms = () => {
   // Login form
@@ -41,16 +87,34 @@ const initForms = () => {
     loginForm.addEventListener('submit', (e) => {
       e.preventDefault();
       
-      const email = loginForm.querySelector('#email')?.value;
+      const email = loginForm.querySelector('#email')?.value?.trim();
       const password = loginForm.querySelector('#password')?.value;
       
-      if (email && password) {
-        // Simulate login - in a real app, this would make an API call
-        console.log('Login attempt:', { email });
-        
-        // Redirect to main app
-        window.location.href = '../index.html';
+      // Validate email
+      if (!email || !isValidEmail(email)) {
+        showFormError(loginForm, 'Please enter a valid email address.');
+        return;
       }
+      
+      // Validate password
+      if (!password || password.length < 1) {
+        showFormError(loginForm, 'Please enter your password.');
+        return;
+      }
+      
+      // Save authentication state
+      saveAuth({
+        isLoggedIn: true,
+        user: {
+          email: email,
+          loginTime: new Date().toISOString()
+        }
+      });
+      
+      console.log('Login successful:', { email });
+      
+      // Redirect to main app
+      window.location.href = '../index.html';
     });
   }
   
@@ -60,16 +124,34 @@ const initForms = () => {
     signupForm.addEventListener('submit', (e) => {
       e.preventDefault();
       
-      const email = signupForm.querySelector('#email')?.value;
+      const email = signupForm.querySelector('#email')?.value?.trim();
       const password = signupForm.querySelector('#password')?.value;
       
-      if (email && password) {
-        // Simulate signup - in a real app, this would make an API call
-        console.log('Signup attempt:', { email });
-        
-        // Redirect to login or main app
-        window.location.href = './login.html';
+      // Validate email
+      if (!email || !isValidEmail(email)) {
+        showFormError(signupForm, 'Please enter a valid email address.');
+        return;
       }
+      
+      // Validate password
+      if (!password || password.length < 8) {
+        showFormError(signupForm, 'Password must be at least 8 characters long.');
+        return;
+      }
+      
+      // Save authentication state (auto-login after signup)
+      saveAuth({
+        isLoggedIn: true,
+        user: {
+          email: email,
+          loginTime: new Date().toISOString()
+        }
+      });
+      
+      console.log('Signup successful:', { email });
+      
+      // Redirect to main app
+      window.location.href = '../index.html';
     });
   }
   
@@ -79,16 +161,19 @@ const initForms = () => {
     resetForm.addEventListener('submit', (e) => {
       e.preventDefault();
       
-      const email = resetForm.querySelector('#email')?.value;
+      const email = resetForm.querySelector('#email')?.value?.trim();
       
-      if (email) {
-        // Simulate password reset - in a real app, this would make an API call
-        console.log('Password reset request:', { email });
-        
-        // Show success message or redirect
-        alert('If an account exists with this email, you will receive a password reset link.');
-        window.location.href = './login.html';
+      // Validate email
+      if (!email || !isValidEmail(email)) {
+        showFormError(resetForm, 'Please enter a valid email address.');
+        return;
       }
+      
+      console.log('Password reset request:', { email });
+      
+      // Show success message or redirect
+      alert('If an account exists with this email, you will receive a password reset link.');
+      window.location.href = './login.html';
     });
   }
 
@@ -101,24 +186,21 @@ const initForms = () => {
       const newPassword = resetPasswordForm.querySelector('#newPassword')?.value;
       const confirmPassword = resetPasswordForm.querySelector('#confirmPassword')?.value;
       
-      if (newPassword && confirmPassword) {
-        if (newPassword !== confirmPassword) {
-          alert('Passwords do not match. Please try again.');
-          return;
-        }
-        
-        if (newPassword.length < 8) {
-          alert('Password must be at least 8 characters long.');
-          return;
-        }
-        
-        // Simulate password reset - in a real app, this would make an API call
-        console.log('Password reset successful');
-        
-        // Show success message and redirect to login
-        alert('Your password has been reset successfully. Please log in with your new password.');
-        window.location.href = './login.html';
+      if (!newPassword || newPassword.length < 8) {
+        showFormError(resetPasswordForm, 'Password must be at least 8 characters long.');
+        return;
       }
+      
+      if (newPassword !== confirmPassword) {
+        showFormError(resetPasswordForm, 'Passwords do not match. Please try again.');
+        return;
+      }
+      
+      console.log('Password reset successful');
+      
+      // Show success message and redirect to login
+      alert('Your password has been reset successfully. Please log in with your new password.');
+      window.location.href = './login.html';
     });
   }
 };
@@ -130,8 +212,20 @@ const initSocialLogin = () => {
   socialButtons.forEach(button => {
     button.addEventListener('click', () => {
       // In a real app, this would initiate OAuth flow
-      console.log('Social login clicked');
-      alert('Social login is not implemented in this demo.');
+      // For demo, we'll simulate a Google login
+      const demoEmail = 'demo@google.com';
+      
+      saveAuth({
+        isLoggedIn: true,
+        user: {
+          email: demoEmail,
+          loginTime: new Date().toISOString(),
+          provider: 'google'
+        }
+      });
+      
+      console.log('Social login successful');
+      window.location.href = '../index.html';
     });
   });
 };
@@ -141,8 +235,12 @@ document.addEventListener('DOMContentLoaded', () => {
   // Initialize themes from saved preferences
   initializeThemes();
   
+  // Check if already logged in (redirect to app)
+  if (checkAlreadyLoggedIn()) {
+    return;
+  }
+  
   initPasswordToggles();
   initForms();
   initSocialLogin();
 });
-

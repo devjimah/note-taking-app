@@ -6,6 +6,19 @@
   <link rel="icon" type="image/png" sizes="32x32" href="./assets/images/favicon-32x32.png">
   <link rel="stylesheet" href="./css/styles.css">
   <title>Settings | Note-taking web app</title>
+  <!-- Early auth check to prevent flash of content before redirect -->
+  <script>
+    (function() {
+      try {
+        const auth = JSON.parse(localStorage.getItem('notes_app_auth') || 'null');
+        if (!auth || !auth.isLoggedIn) {
+          window.location.replace('./auth/login.html');
+        }
+      } catch (e) {
+        window.location.replace('./auth/login.html');
+      }
+    })();
+  </script>
 </head>
 <body>
   <div class="app app--settings" id="app">
