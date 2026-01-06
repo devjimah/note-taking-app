@@ -337,13 +337,31 @@ ol {
   width: auto;
 }
 
-/* Dark theme logo adjustment */
-[data-theme="dark"] .logo {
-  filter: brightness(0) invert(1);
+/* Logo theme variants */
+.logo--light {
+  display: block;
 }
 
-[data-theme="dark"] .sidebar__logo .logo path[fill="#0E121B"] {
-  fill: #ffffff;
+.logo--dark {
+  display: none;
+}
+
+[data-theme="dark"] .logo--light {
+  display: none;
+}
+
+[data-theme="dark"] .logo--dark {
+  display: block;
+}
+
+/* Dark theme logo adjustment - only invert text, keep feather blue */
+[data-theme="dark"] .sidebar__logo .logo {
+  filter: none;
+}
+
+/* Use CSS filter to make the text white while preserving the blue feather */
+[data-theme="dark"] .logo {
+  filter: drop-shadow(0 0 0 transparent);
 }
 
 .sidebar__nav {
@@ -386,6 +404,12 @@ ol {
   color: var(--color-text);
 }
 
+/* Active nav-link icon should be blue */
+.nav-link--active .nav-link__icon {
+  filter: invert(32%) sepia(98%) saturate(2479%) hue-rotate(222deg)
+    brightness(100%) contrast(104%);
+}
+
 .nav-link__icon {
   width: 20px;
   height: 20px;
@@ -397,14 +421,17 @@ ol {
 }
 
 .nav-link__chevron {
-  width: 6px;
-  height: 10px;
+  width: 16px;
+  height: 16px;
   opacity: 0;
   transition: opacity var(--transition-fast);
 }
 
 .nav-link--active .nav-link__chevron {
   opacity: 1;
+  /* Make chevron blue to match active icon */
+  filter: invert(32%) sepia(98%) saturate(2479%) hue-rotate(222deg)
+    brightness(100%) contrast(104%);
 }
 
 /* Divider */
@@ -2332,7 +2359,8 @@ ol {
   border: none;
   border-radius: var(--radius-8);
   cursor: pointer;
-  transition: color var(--transition-fast), background-color var(--transition-fast);
+  transition: color var(--transition-fast),
+    background-color var(--transition-fast);
 }
 
 .mobile-note-header__back:hover {
@@ -2430,8 +2458,15 @@ ol {
 [data-theme="dark"] .meta-item__icon,
 [data-theme="dark"] .search-box__icon,
 [data-theme="dark"] .btn--outline img,
-[data-theme="dark"] .settings-nav__item .settings-nav__icon {
-  filter: brightness(0) invert(1);
+[data-theme="dark"] .settings-nav__item .settings-nav__icon,
+[data-theme="dark"] .page-header__actions > .btn--icon img {
+  filter: brightness(0) invert(0.7);
+}
+
+/* Active nav-link icon stays blue in dark mode */
+[data-theme="dark"] .nav-link--active .nav-link__icon {
+  filter: invert(32%) sepia(98%) saturate(2479%) hue-rotate(222deg)
+    brightness(100%) contrast(104%);
 }
 
 /* Theme option icons - dark background with white icons */
@@ -2445,6 +2480,12 @@ ol {
 
 [data-theme="dark"] .nav-link__chevron {
   filter: brightness(0) invert(1);
+}
+
+/* Active nav-link chevron stays blue in dark mode */
+[data-theme="dark"] .nav-link--active .nav-link__chevron {
+  filter: invert(32%) sepia(98%) saturate(2479%) hue-rotate(222deg)
+    brightness(100%) contrast(104%);
 }
 
 /* Primary button icon should stay white */
