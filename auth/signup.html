@@ -13,18 +13,25 @@
     <title>Sign Up | Notes</title>
     <script>
       // Apply saved theme immediately to prevent FOUC
-      (function() {
+      (function () {
         try {
-          const prefs = JSON.parse(localStorage.getItem('notes_preferences') || '{}');
-          let theme = prefs.colorTheme || 'light';
-          if (theme === 'system') {
-            theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+          const prefs = JSON.parse(
+            localStorage.getItem("notes_preferences") || "{}"
+          );
+          let theme = prefs.colorTheme || "light";
+          if (theme === "system") {
+            theme = window.matchMedia("(prefers-color-scheme: dark)").matches
+              ? "dark"
+              : "light";
           }
-          document.documentElement.setAttribute('data-theme', theme);
-          document.documentElement.setAttribute('data-font', prefs.fontTheme || 'sans-serif');
+          document.documentElement.setAttribute("data-theme", theme);
+          document.documentElement.setAttribute(
+            "data-font",
+            prefs.fontTheme || "sans-serif"
+          );
         } catch (e) {
-          document.documentElement.setAttribute('data-theme', 'light');
-          document.documentElement.setAttribute('data-font', 'sans-serif');
+          document.documentElement.setAttribute("data-theme", "light");
+          document.documentElement.setAttribute("data-font", "sans-serif");
         }
       })();
     </script>
@@ -34,13 +41,24 @@
       <div class="auth-card">
         <!-- Logo -->
         <div class="auth-card__logo">
-          <img src="../assets/images/logo.svg" alt="Notes Logo" class="logo" />
+          <img
+            src="../assets/images/logo.svg"
+            alt="Notes Logo"
+            class="logo logo--light"
+          />
+          <img
+            src="../assets/images/logo-dark.svg"
+            alt="Notes Logo"
+            class="logo logo--dark"
+          />
         </div>
 
         <!-- Header Text -->
         <div class="auth-card__header">
           <h1 class="auth-card__title">Create Your Account</h1>
-          <p class="auth-card__subtitle">Sign up to start organizing your notes and boost your productivity.</p>
+          <p class="auth-card__subtitle">
+            Sign up to start organizing your notes and boost your productivity.
+          </p>
         </div>
 
         <!-- Signup Form -->
@@ -132,4 +150,3 @@
     <script type="module" src="../js/auth.js"></script>
   </body>
 </html>
-

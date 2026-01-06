@@ -1,431 +1,627 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="light" data-font="sans-serif">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="icon" type="image/png" sizes="32x32" href="./assets/images/favicon-32x32.png">
-  <link rel="stylesheet" href="./css/styles.css">
-  <title>Settings | Note-taking web app</title>
-  <!-- Early auth check to prevent flash of content before redirect -->
-  <script>
-    (function() {
-      try {
-        const auth = JSON.parse(localStorage.getItem('notes_app_auth') || 'null');
-        if (!auth || !auth.isLoggedIn) {
-          window.location.replace('./auth/login.html');
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="./assets/images/favicon-32x32.png"
+    />
+    <link rel="stylesheet" href="./css/styles.css" />
+    <title>Settings | Note-taking web app</title>
+    <!-- Early auth check to prevent flash of content before redirect -->
+    <script>
+      (function () {
+        try {
+          const auth = JSON.parse(
+            localStorage.getItem("notes_app_auth") || "null"
+          );
+          if (!auth || !auth.isLoggedIn) {
+            window.location.replace("./auth/login.html");
+          }
+        } catch (e) {
+          window.location.replace("./auth/login.html");
         }
-      } catch (e) {
-        window.location.replace('./auth/login.html');
-      }
-    })();
-  </script>
-</head>
-<body>
-  <div class="app app--settings" id="app">
-    <!-- Desktop Sidebar Navigation -->
-    <aside class="sidebar sidebar--nav" id="sidebarNav">
-      <div class="sidebar__logo">
-        <img src="./assets/images/logo.svg" alt="Notes Logo" class="logo">
-      </div>
-      <nav class="sidebar__nav" aria-label="Main navigation">
-        <ul class="nav-list">
-          <li class="nav-list__item">
-            <a href="./index.html" class="nav-link" data-view="all">
-              <img src="./assets/images/icon-home.svg" alt="" class="nav-link__icon" aria-hidden="true">
-              <span class="nav-link__text">All Notes</span>
-            </a>
-          </li>
-          <li class="nav-list__item">
-            <a href="./index.html?view=archived" class="nav-link" data-view="archived">
-              <img src="./assets/images/icon-archive.svg" alt="" class="nav-link__icon" aria-hidden="true">
-              <span class="nav-link__text">Archived Notes</span>
-            </a>
-          </li>
-        </ul>
-        <div class="divider"></div>
-        <div class="tags-section">
-          <span class="tags-section__title">Tags</span>
-          <ul class="tag-list" id="tagList" aria-label="Filter by tag">
-            <!-- Tags will be rendered dynamically -->
-          </ul>
+      })();
+    </script>
+  </head>
+  <body>
+    <div class="app app--settings" id="app">
+      <!-- Desktop Sidebar Navigation -->
+      <aside class="sidebar sidebar--nav" id="sidebarNav">
+        <div class="sidebar__logo">
+          <img
+            src="./assets/images/logo.svg"
+            alt="Notes Logo"
+            class="logo logo--light"
+          />
+          <img
+            src="./assets/images/logo-dark.svg"
+            alt="Notes Logo"
+            class="logo logo--dark"
+          />
         </div>
-      </nav>
-    </aside>
-
-    <!-- Main Content Area -->
-    <main class="main-content main-content--settings" id="mainContent">
-      <!-- Page Header -->
-      <header class="page-header">
-        <h1 class="page-header__title">Settings</h1>
-        <div class="page-header__actions">
-          <div class="search-box">
-            <img src="./assets/images/icon-search.svg" alt="" class="search-box__icon" aria-hidden="true">
-            <input 
-              type="search" 
-              class="search-box__input" 
-              id="searchInput"
-              placeholder="Search by title, content, or tags…"
-              aria-label="Search notes"
-            >
-          </div>
-          <a href="./settings.html" class="btn btn--icon btn--icon--active" aria-label="Settings" aria-current="page">
-            <img src="./assets/images/icon-settings.svg" alt="" aria-hidden="true">
-          </a>
-        </div>
-      </header>
-
-      <!-- Settings Menu Sidebar -->
-      <aside class="sidebar sidebar--settings-menu" id="settingsMenu">
-        <nav aria-label="Settings menu">
-          <ul class="settings-nav">
-            <li>
-              <button class="settings-nav__item settings-nav__item--active" data-setting="color-theme">
-                <img src="./assets/images/icon-sun.svg" alt="" class="settings-nav__icon" aria-hidden="true">
-                <span>Color Theme</span>
-                <img src="./assets/images/icon-chevron-right.svg" alt="" class="settings-nav__chevron" aria-hidden="true">
-              </button>
+        <nav class="sidebar__nav" aria-label="Main navigation">
+          <ul class="nav-list">
+            <li class="nav-list__item">
+              <a href="./index.html" class="nav-link" data-view="all">
+                <img
+                  src="./assets/images/icon-home.svg"
+                  alt=""
+                  class="nav-link__icon"
+                  aria-hidden="true"
+                />
+                <span class="nav-link__text">All Notes</span>
+              </a>
             </li>
-            <li>
-              <button class="settings-nav__item" data-setting="font-theme">
-                <img src="./assets/images/icon-font.svg" alt="" class="settings-nav__icon" aria-hidden="true">
-                <span>Font Theme</span>
-              </button>
-            </li>
-            <li>
-              <button class="settings-nav__item" data-setting="change-password">
-                <img src="./assets/images/icon-lock.svg" alt="" class="settings-nav__icon" aria-hidden="true">
-                <span>Change Password</span>
-              </button>
+            <li class="nav-list__item">
+              <a
+                href="./index.html?view=archived"
+                class="nav-link"
+                data-view="archived"
+              >
+                <img
+                  src="./assets/images/icon-archive.svg"
+                  alt=""
+                  class="nav-link__icon"
+                  aria-hidden="true"
+                />
+                <span class="nav-link__text">Archived Notes</span>
+              </a>
             </li>
           </ul>
           <div class="divider"></div>
-          <ul class="settings-nav">
-            <li>
-              <button class="settings-nav__item" data-setting="logout">
-                <img src="./assets/images/icon-logout.svg" alt="" class="settings-nav__icon" aria-hidden="true">
-                <span>Logout</span>
-              </button>
-            </li>
-          </ul>
+          <div class="tags-section">
+            <span class="tags-section__title">Tags</span>
+            <ul class="tag-list" id="tagList" aria-label="Filter by tag">
+              <!-- Tags will be rendered dynamically -->
+            </ul>
+          </div>
         </nav>
       </aside>
 
-      <!-- Settings Content -->
-      <div class="settings-content" id="settingsContent">
-        <!-- Color Theme Section -->
-        <section class="settings-section" id="colorThemeSection" aria-labelledby="colorThemeTitle">
-          <div class="settings-section__header">
-            <h2 class="settings-section__title" id="colorThemeTitle">Color Theme</h2>
-            <p class="settings-section__description">Choose your color theme:</p>
-          </div>
-          <div class="settings-section__body">
-            <fieldset class="theme-options" role="radiogroup" aria-label="Color theme options">
-              <legend class="visually-hidden">Select a color theme</legend>
-              
-              <label class="theme-option">
-                <input 
-                  type="radio" 
-                  name="colorTheme" 
-                  value="light" 
-                  class="theme-option__input"
-                  checked
-                >
-                <span class="theme-option__card">
-                  <span class="theme-option__icon">
-                    <img src="./assets/images/icon-sun.svg" alt="" aria-hidden="true">
-                  </span>
-                  <span class="theme-option__content">
-                    <span class="theme-option__title">Light Mode</span>
-                    <span class="theme-option__description">Pick a clean and classic light theme</span>
-                  </span>
-                  <span class="theme-option__radio"></span>
-                </span>
-              </label>
-
-              <label class="theme-option">
-                <input 
-                  type="radio" 
-                  name="colorTheme" 
-                  value="dark" 
-                  class="theme-option__input"
-                >
-                <span class="theme-option__card">
-                  <span class="theme-option__icon">
-                    <img src="./assets/images/icon-moon.svg" alt="" aria-hidden="true">
-                  </span>
-                  <span class="theme-option__content">
-                    <span class="theme-option__title">Dark Mode</span>
-                    <span class="theme-option__description">Select a sleek and modern dark theme</span>
-                  </span>
-                  <span class="theme-option__radio"></span>
-                </span>
-              </label>
-
-              <label class="theme-option">
-                <input 
-                  type="radio" 
-                  name="colorTheme" 
-                  value="system" 
-                  class="theme-option__input"
-                >
-                <span class="theme-option__card">
-                  <span class="theme-option__icon">
-                    <img src="./assets/images/icon-system-theme.svg" alt="" aria-hidden="true">
-                  </span>
-                  <span class="theme-option__content">
-                    <span class="theme-option__title">System</span>
-                    <span class="theme-option__description">Adapts to your device's theme</span>
-                  </span>
-                  <span class="theme-option__radio"></span>
-                </span>
-              </label>
-            </fieldset>
-          </div>
-          <div class="settings-section__footer">
-            <button class="btn btn--primary btn--apply" id="applyColorThemeBtn">Apply Changes</button>
-          </div>
-        </section>
-
-        <!-- Font Theme Section -->
-        <section class="settings-section" id="fontThemeSection" aria-labelledby="fontThemeTitle" hidden>
-          <div class="settings-section__header">
-            <h2 class="settings-section__title" id="fontThemeTitle">Font Theme</h2>
-            <p class="settings-section__description">Choose your font theme:</p>
-          </div>
-          <div class="settings-section__body">
-            <fieldset class="theme-options" role="radiogroup" aria-label="Font theme options">
-              <legend class="visually-hidden">Select a font theme</legend>
-              
-              <label class="theme-option">
-                <input 
-                  type="radio" 
-                  name="fontTheme" 
-                  value="sans-serif" 
-                  class="theme-option__input"
-                  checked
-                >
-                <span class="theme-option__card">
-                  <span class="theme-option__icon">
-                    <img src="./assets/images/icon-font-sans-serif.svg" alt="" aria-hidden="true">
-                  </span>
-                  <span class="theme-option__content">
-                    <span class="theme-option__title">Sans-serif</span>
-                    <span class="theme-option__description">Clean and modern, easy to read.</span>
-                  </span>
-                  <span class="theme-option__radio"></span>
-                </span>
-              </label>
-
-              <label class="theme-option">
-                <input 
-                  type="radio" 
-                  name="fontTheme" 
-                  value="serif" 
-                  class="theme-option__input"
-                >
-                <span class="theme-option__card">
-                  <span class="theme-option__icon">
-                    <img src="./assets/images/icon-font-serif.svg" alt="" aria-hidden="true">
-                  </span>
-                  <span class="theme-option__content">
-                    <span class="theme-option__title">Serif</span>
-                    <span class="theme-option__description">Classic and elegant for a timeless feel.</span>
-                  </span>
-                  <span class="theme-option__radio"></span>
-                </span>
-              </label>
-
-              <label class="theme-option">
-                <input 
-                  type="radio" 
-                  name="fontTheme" 
-                  value="monospace" 
-                  class="theme-option__input"
-                >
-                <span class="theme-option__card">
-                  <span class="theme-option__icon">
-                    <img src="./assets/images/icon-font-monospace.svg" alt="" aria-hidden="true">
-                  </span>
-                  <span class="theme-option__content">
-                    <span class="theme-option__title">Monospace</span>
-                    <span class="theme-option__description">Code-like, great for a technical vibe.</span>
-                  </span>
-                  <span class="theme-option__radio"></span>
-                </span>
-              </label>
-            </fieldset>
-          </div>
-          <div class="settings-section__footer">
-            <button class="btn btn--primary btn--apply" id="applyFontThemeBtn">Apply Changes</button>
-          </div>
-        </section>
-
-        <!-- Change Password Section -->
-        <section class="settings-section" id="changePasswordSection" aria-labelledby="changePasswordTitle" hidden>
-          <div class="settings-section__header">
-            <h2 class="settings-section__title" id="changePasswordTitle">Change Password</h2>
-          </div>
-          <form class="settings-form" id="changePasswordForm">
-            <div class="settings-form__body">
-              <!-- Old Password -->
-              <div class="form-group">
-                <label for="oldPassword" class="form-label">Old Password</label>
-                <div class="form-field form-field--password">
-                  <input
-                    type="password"
-                    id="oldPassword"
-                    name="oldPassword"
-                    class="form-input"
-                    required
-                    autocomplete="current-password"
-                  >
-                  <button
-                    type="button"
-                    class="password-toggle"
-                    aria-label="Show password"
-                    data-toggle-password
-                  >
-                    <img
-                      src="./assets/images/icon-show-password.svg"
-                      alt=""
-                      class="password-toggle__icon password-toggle__icon--show"
-                      aria-hidden="true"
-                    >
-                    <img
-                      src="./assets/images/icon-hide-password.svg"
-                      alt=""
-                      class="password-toggle__icon password-toggle__icon--hide"
-                      aria-hidden="true"
-                      hidden
-                    >
-                  </button>
-                </div>
-              </div>
-
-              <!-- New Password -->
-              <div class="form-group">
-                <label for="newPassword" class="form-label">New Password</label>
-                <div class="form-field form-field--password">
-                  <input
-                    type="password"
-                    id="newPassword"
-                    name="newPassword"
-                    class="form-input"
-                    required
-                    autocomplete="new-password"
-                    minlength="8"
-                  >
-                  <button
-                    type="button"
-                    class="password-toggle"
-                    aria-label="Show password"
-                    data-toggle-password
-                  >
-                    <img
-                      src="./assets/images/icon-show-password.svg"
-                      alt=""
-                      class="password-toggle__icon password-toggle__icon--show"
-                      aria-hidden="true"
-                    >
-                    <img
-                      src="./assets/images/icon-hide-password.svg"
-                      alt=""
-                      class="password-toggle__icon password-toggle__icon--hide"
-                      aria-hidden="true"
-                      hidden
-                    >
-                  </button>
-                </div>
-                <div class="form-hint form-hint--with-icon">
-                  <img src="./assets/images/icon-info.svg" alt="" class="form-hint__icon" aria-hidden="true">
-                  <span>At least 8 characters</span>
-                </div>
-              </div>
-
-              <!-- Confirm New Password -->
-              <div class="form-group">
-                <label for="confirmNewPassword" class="form-label">Confirm New Password</label>
-                <div class="form-field form-field--password">
-                  <input
-                    type="password"
-                    id="confirmNewPassword"
-                    name="confirmNewPassword"
-                    class="form-input"
-                    required
-                    autocomplete="new-password"
-                    minlength="8"
-                  >
-                  <button
-                    type="button"
-                    class="password-toggle"
-                    aria-label="Show password"
-                    data-toggle-password
-                  >
-                    <img
-                      src="./assets/images/icon-show-password.svg"
-                      alt=""
-                      class="password-toggle__icon password-toggle__icon--show"
-                      aria-hidden="true"
-                    >
-                    <img
-                      src="./assets/images/icon-hide-password.svg"
-                      alt=""
-                      class="password-toggle__icon password-toggle__icon--hide"
-                      aria-hidden="true"
-                      hidden
-                    >
-                  </button>
-                </div>
-              </div>
+      <!-- Main Content Area -->
+      <main class="main-content main-content--settings" id="mainContent">
+        <!-- Page Header -->
+        <header class="page-header">
+          <h1 class="page-header__title">Settings</h1>
+          <div class="page-header__actions">
+            <div class="search-box">
+              <img
+                src="./assets/images/icon-search.svg"
+                alt=""
+                class="search-box__icon"
+                aria-hidden="true"
+              />
+              <input
+                type="search"
+                class="search-box__input"
+                id="searchInput"
+                placeholder="Search by title, content, or tags…"
+                aria-label="Search notes"
+              />
             </div>
-            <div class="settings-form__footer">
-              <button type="submit" class="btn btn--primary">Save Password</button>
+            <a
+              href="./settings.html"
+              class="btn btn--icon btn--icon--active"
+              aria-label="Settings"
+              aria-current="page"
+            >
+              <img
+                src="./assets/images/icon-settings.svg"
+                alt=""
+                aria-hidden="true"
+              />
+            </a>
+          </div>
+        </header>
+
+        <!-- Settings Menu Sidebar -->
+        <aside class="sidebar sidebar--settings-menu" id="settingsMenu">
+          <nav aria-label="Settings menu">
+            <ul class="settings-nav">
+              <li>
+                <button
+                  class="settings-nav__item settings-nav__item--active"
+                  data-setting="color-theme"
+                >
+                  <img
+                    src="./assets/images/icon-sun.svg"
+                    alt=""
+                    class="settings-nav__icon"
+                    aria-hidden="true"
+                  />
+                  <span>Color Theme</span>
+                  <img
+                    src="./assets/images/icon-chevron-right.svg"
+                    alt=""
+                    class="settings-nav__chevron"
+                    aria-hidden="true"
+                  />
+                </button>
+              </li>
+              <li>
+                <button class="settings-nav__item" data-setting="font-theme">
+                  <img
+                    src="./assets/images/icon-font.svg"
+                    alt=""
+                    class="settings-nav__icon"
+                    aria-hidden="true"
+                  />
+                  <span>Font Theme</span>
+                </button>
+              </li>
+              <li>
+                <button
+                  class="settings-nav__item"
+                  data-setting="change-password"
+                >
+                  <img
+                    src="./assets/images/icon-lock.svg"
+                    alt=""
+                    class="settings-nav__icon"
+                    aria-hidden="true"
+                  />
+                  <span>Change Password</span>
+                </button>
+              </li>
+            </ul>
+            <div class="divider"></div>
+            <ul class="settings-nav">
+              <li>
+                <button class="settings-nav__item" data-setting="logout">
+                  <img
+                    src="./assets/images/icon-logout.svg"
+                    alt=""
+                    class="settings-nav__icon"
+                    aria-hidden="true"
+                  />
+                  <span>Logout</span>
+                </button>
+              </li>
+            </ul>
+          </nav>
+        </aside>
+
+        <!-- Settings Content -->
+        <div class="settings-content" id="settingsContent">
+          <!-- Color Theme Section -->
+          <section
+            class="settings-section"
+            id="colorThemeSection"
+            aria-labelledby="colorThemeTitle"
+          >
+            <div class="settings-section__header">
+              <h2 class="settings-section__title" id="colorThemeTitle">
+                Color Theme
+              </h2>
+              <p class="settings-section__description">
+                Choose your color theme:
+              </p>
             </div>
-          </form>
-        </section>
+            <div class="settings-section__body">
+              <fieldset
+                class="theme-options"
+                role="radiogroup"
+                aria-label="Color theme options"
+              >
+                <legend class="visually-hidden">Select a color theme</legend>
+
+                <label class="theme-option">
+                  <input
+                    type="radio"
+                    name="colorTheme"
+                    value="light"
+                    class="theme-option__input"
+                    checked
+                  />
+                  <span class="theme-option__card">
+                    <span class="theme-option__icon">
+                      <img
+                        src="./assets/images/icon-sun.svg"
+                        alt=""
+                        aria-hidden="true"
+                      />
+                    </span>
+                    <span class="theme-option__content">
+                      <span class="theme-option__title">Light Mode</span>
+                      <span class="theme-option__description"
+                        >Pick a clean and classic light theme</span
+                      >
+                    </span>
+                    <span class="theme-option__radio"></span>
+                  </span>
+                </label>
+
+                <label class="theme-option">
+                  <input
+                    type="radio"
+                    name="colorTheme"
+                    value="dark"
+                    class="theme-option__input"
+                  />
+                  <span class="theme-option__card">
+                    <span class="theme-option__icon">
+                      <img
+                        src="./assets/images/icon-moon.svg"
+                        alt=""
+                        aria-hidden="true"
+                      />
+                    </span>
+                    <span class="theme-option__content">
+                      <span class="theme-option__title">Dark Mode</span>
+                      <span class="theme-option__description"
+                        >Select a sleek and modern dark theme</span
+                      >
+                    </span>
+                    <span class="theme-option__radio"></span>
+                  </span>
+                </label>
+
+                <label class="theme-option">
+                  <input
+                    type="radio"
+                    name="colorTheme"
+                    value="system"
+                    class="theme-option__input"
+                  />
+                  <span class="theme-option__card">
+                    <span class="theme-option__icon">
+                      <img
+                        src="./assets/images/icon-system-theme.svg"
+                        alt=""
+                        aria-hidden="true"
+                      />
+                    </span>
+                    <span class="theme-option__content">
+                      <span class="theme-option__title">System</span>
+                      <span class="theme-option__description"
+                        >Adapts to your device's theme</span
+                      >
+                    </span>
+                    <span class="theme-option__radio"></span>
+                  </span>
+                </label>
+              </fieldset>
+            </div>
+            <div class="settings-section__footer">
+              <button
+                class="btn btn--primary btn--apply"
+                id="applyColorThemeBtn"
+              >
+                Apply Changes
+              </button>
+            </div>
+          </section>
+
+          <!-- Font Theme Section -->
+          <section
+            class="settings-section"
+            id="fontThemeSection"
+            aria-labelledby="fontThemeTitle"
+            hidden
+          >
+            <div class="settings-section__header">
+              <h2 class="settings-section__title" id="fontThemeTitle">
+                Font Theme
+              </h2>
+              <p class="settings-section__description">
+                Choose your font theme:
+              </p>
+            </div>
+            <div class="settings-section__body">
+              <fieldset
+                class="theme-options"
+                role="radiogroup"
+                aria-label="Font theme options"
+              >
+                <legend class="visually-hidden">Select a font theme</legend>
+
+                <label class="theme-option">
+                  <input
+                    type="radio"
+                    name="fontTheme"
+                    value="sans-serif"
+                    class="theme-option__input"
+                    checked
+                  />
+                  <span class="theme-option__card">
+                    <span class="theme-option__icon">
+                      <img
+                        src="./assets/images/icon-font-sans-serif.svg"
+                        alt=""
+                        aria-hidden="true"
+                      />
+                    </span>
+                    <span class="theme-option__content">
+                      <span class="theme-option__title">Sans-serif</span>
+                      <span class="theme-option__description"
+                        >Clean and modern, easy to read.</span
+                      >
+                    </span>
+                    <span class="theme-option__radio"></span>
+                  </span>
+                </label>
+
+                <label class="theme-option">
+                  <input
+                    type="radio"
+                    name="fontTheme"
+                    value="serif"
+                    class="theme-option__input"
+                  />
+                  <span class="theme-option__card">
+                    <span class="theme-option__icon">
+                      <img
+                        src="./assets/images/icon-font-serif.svg"
+                        alt=""
+                        aria-hidden="true"
+                      />
+                    </span>
+                    <span class="theme-option__content">
+                      <span class="theme-option__title">Serif</span>
+                      <span class="theme-option__description"
+                        >Classic and elegant for a timeless feel.</span
+                      >
+                    </span>
+                    <span class="theme-option__radio"></span>
+                  </span>
+                </label>
+
+                <label class="theme-option">
+                  <input
+                    type="radio"
+                    name="fontTheme"
+                    value="monospace"
+                    class="theme-option__input"
+                  />
+                  <span class="theme-option__card">
+                    <span class="theme-option__icon">
+                      <img
+                        src="./assets/images/icon-font-monospace.svg"
+                        alt=""
+                        aria-hidden="true"
+                      />
+                    </span>
+                    <span class="theme-option__content">
+                      <span class="theme-option__title">Monospace</span>
+                      <span class="theme-option__description"
+                        >Code-like, great for a technical vibe.</span
+                      >
+                    </span>
+                    <span class="theme-option__radio"></span>
+                  </span>
+                </label>
+              </fieldset>
+            </div>
+            <div class="settings-section__footer">
+              <button
+                class="btn btn--primary btn--apply"
+                id="applyFontThemeBtn"
+              >
+                Apply Changes
+              </button>
+            </div>
+          </section>
+
+          <!-- Change Password Section -->
+          <section
+            class="settings-section"
+            id="changePasswordSection"
+            aria-labelledby="changePasswordTitle"
+            hidden
+          >
+            <div class="settings-section__header">
+              <h2 class="settings-section__title" id="changePasswordTitle">
+                Change Password
+              </h2>
+            </div>
+            <form class="settings-form" id="changePasswordForm">
+              <div class="settings-form__body">
+                <!-- Old Password -->
+                <div class="form-group">
+                  <label for="oldPassword" class="form-label"
+                    >Old Password</label
+                  >
+                  <div class="form-field form-field--password">
+                    <input
+                      type="password"
+                      id="oldPassword"
+                      name="oldPassword"
+                      class="form-input"
+                      required
+                      autocomplete="current-password"
+                    />
+                    <button
+                      type="button"
+                      class="password-toggle"
+                      aria-label="Show password"
+                      data-toggle-password
+                    >
+                      <img
+                        src="./assets/images/icon-show-password.svg"
+                        alt=""
+                        class="password-toggle__icon password-toggle__icon--show"
+                        aria-hidden="true"
+                      />
+                      <img
+                        src="./assets/images/icon-hide-password.svg"
+                        alt=""
+                        class="password-toggle__icon password-toggle__icon--hide"
+                        aria-hidden="true"
+                        hidden
+                      />
+                    </button>
+                  </div>
+                </div>
+
+                <!-- New Password -->
+                <div class="form-group">
+                  <label for="newPassword" class="form-label"
+                    >New Password</label
+                  >
+                  <div class="form-field form-field--password">
+                    <input
+                      type="password"
+                      id="newPassword"
+                      name="newPassword"
+                      class="form-input"
+                      required
+                      autocomplete="new-password"
+                      minlength="8"
+                    />
+                    <button
+                      type="button"
+                      class="password-toggle"
+                      aria-label="Show password"
+                      data-toggle-password
+                    >
+                      <img
+                        src="./assets/images/icon-show-password.svg"
+                        alt=""
+                        class="password-toggle__icon password-toggle__icon--show"
+                        aria-hidden="true"
+                      />
+                      <img
+                        src="./assets/images/icon-hide-password.svg"
+                        alt=""
+                        class="password-toggle__icon password-toggle__icon--hide"
+                        aria-hidden="true"
+                        hidden
+                      />
+                    </button>
+                  </div>
+                  <div class="form-hint form-hint--with-icon">
+                    <img
+                      src="./assets/images/icon-info.svg"
+                      alt=""
+                      class="form-hint__icon"
+                      aria-hidden="true"
+                    />
+                    <span>At least 8 characters</span>
+                  </div>
+                </div>
+
+                <!-- Confirm New Password -->
+                <div class="form-group">
+                  <label for="confirmNewPassword" class="form-label"
+                    >Confirm New Password</label
+                  >
+                  <div class="form-field form-field--password">
+                    <input
+                      type="password"
+                      id="confirmNewPassword"
+                      name="confirmNewPassword"
+                      class="form-input"
+                      required
+                      autocomplete="new-password"
+                      minlength="8"
+                    />
+                    <button
+                      type="button"
+                      class="password-toggle"
+                      aria-label="Show password"
+                      data-toggle-password
+                    >
+                      <img
+                        src="./assets/images/icon-show-password.svg"
+                        alt=""
+                        class="password-toggle__icon password-toggle__icon--show"
+                        aria-hidden="true"
+                      />
+                      <img
+                        src="./assets/images/icon-hide-password.svg"
+                        alt=""
+                        class="password-toggle__icon password-toggle__icon--hide"
+                        aria-hidden="true"
+                        hidden
+                      />
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div class="settings-form__footer">
+                <button type="submit" class="btn btn--primary">
+                  Save Password
+                </button>
+              </div>
+            </form>
+          </section>
+        </div>
+      </main>
+
+      <!-- Mobile Bottom Navigation -->
+      <nav class="mobile-nav" id="mobileNav" aria-label="Mobile navigation">
+        <a href="./index.html" class="mobile-nav__item" data-view="all">
+          <img src="./assets/images/icon-home.svg" alt="" aria-hidden="true" />
+          <span>Home</span>
+        </a>
+        <div class="mobile-nav__divider" aria-hidden="true"></div>
+        <button class="mobile-nav__item" data-action="search">
+          <img
+            src="./assets/images/icon-search.svg"
+            alt=""
+            aria-hidden="true"
+          />
+          <span>Search</span>
+        </button>
+        <div class="mobile-nav__divider" aria-hidden="true"></div>
+        <a
+          href="./index.html?view=archived"
+          class="mobile-nav__item"
+          data-view="archived"
+        >
+          <img
+            src="./assets/images/icon-archive.svg"
+            alt=""
+            aria-hidden="true"
+          />
+          <span>Archived</span>
+        </a>
+        <div class="mobile-nav__divider" aria-hidden="true"></div>
+        <button class="mobile-nav__item" data-action="tags">
+          <img src="./assets/images/icon-tag.svg" alt="" aria-hidden="true" />
+          <span>Tags</span>
+        </button>
+        <div class="mobile-nav__divider" aria-hidden="true"></div>
+        <a
+          href="./settings.html"
+          class="mobile-nav__item mobile-nav__item--active"
+          aria-current="page"
+        >
+          <img
+            src="./assets/images/icon-settings.svg"
+            alt=""
+            aria-hidden="true"
+          />
+          <span>Settings</span>
+        </a>
+      </nav>
+
+      <!-- Toast Notification -->
+      <div class="toast" id="toast" role="alert" aria-live="polite" hidden>
+        <img
+          src="./assets/images/icon-check-circle.svg"
+          alt=""
+          class="toast__icon"
+          id="toastIcon"
+          aria-hidden="true"
+        />
+        <span class="toast__message" id="toastMessage"></span>
+        <a href="#" class="toast__link" id="toastLink" hidden></a>
+        <button
+          class="toast__close"
+          id="toastClose"
+          aria-label="Dismiss notification"
+        >
+          <img src="./assets/images/icon-cross.svg" alt="" aria-hidden="true" />
+        </button>
       </div>
-    </main>
-
-    <!-- Mobile Bottom Navigation -->
-    <nav class="mobile-nav" id="mobileNav" aria-label="Mobile navigation">
-      <a href="./index.html" class="mobile-nav__item" data-view="all">
-        <img src="./assets/images/icon-home.svg" alt="" aria-hidden="true">
-        <span>Home</span>
-      </a>
-      <div class="mobile-nav__divider" aria-hidden="true"></div>
-      <button class="mobile-nav__item" data-action="search">
-        <img src="./assets/images/icon-search.svg" alt="" aria-hidden="true">
-        <span>Search</span>
-      </button>
-      <div class="mobile-nav__divider" aria-hidden="true"></div>
-      <a href="./index.html?view=archived" class="mobile-nav__item" data-view="archived">
-        <img src="./assets/images/icon-archive.svg" alt="" aria-hidden="true">
-        <span>Archived</span>
-      </a>
-      <div class="mobile-nav__divider" aria-hidden="true"></div>
-      <button class="mobile-nav__item" data-action="tags">
-        <img src="./assets/images/icon-tag.svg" alt="" aria-hidden="true">
-        <span>Tags</span>
-      </button>
-      <div class="mobile-nav__divider" aria-hidden="true"></div>
-      <a href="./settings.html" class="mobile-nav__item mobile-nav__item--active" aria-current="page">
-        <img src="./assets/images/icon-settings.svg" alt="" aria-hidden="true">
-        <span>Settings</span>
-      </a>
-    </nav>
-
-    <!-- Toast Notification -->
-    <div class="toast" id="toast" role="alert" aria-live="polite" hidden>
-      <img src="./assets/images/icon-check-circle.svg" alt="" class="toast__icon" id="toastIcon" aria-hidden="true">
-      <span class="toast__message" id="toastMessage"></span>
-      <a href="#" class="toast__link" id="toastLink" hidden></a>
-      <button class="toast__close" id="toastClose" aria-label="Dismiss notification">
-        <img src="./assets/images/icon-cross.svg" alt="" aria-hidden="true">
-      </button>
     </div>
-  </div>
 
-  <!-- JavaScript Modules -->
-  <script type="module" src="./js/settings.js"></script>
-</body>
+    <!-- JavaScript Modules -->
+    <script type="module" src="./js/settings.js"></script>
+  </body>
 </html>
