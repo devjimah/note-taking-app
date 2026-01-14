@@ -7,11 +7,13 @@ import * as storage from './storage.js';
 import * as noteManager from './noteManager.js';
 import * as ui from './ui.js';
 import * as themes from './themes.js';
+import * as sharing from './sharing.js';
 
 // Application State
 const state = {
-  currentView: 'all', // 'all', 'archived', 'tag'
+  currentView: 'all', // 'all', 'archived', 'tag', 'category'
   currentTag: null,
+  currentCategory: null,
   activeNoteId: null,
   isEditing: false,
   hasUnsavedChanges: false
@@ -35,6 +37,8 @@ const initElements = () => {
   // Navigation
   elements.navLinks = document.querySelectorAll('.nav-link[data-view]');
   elements.tagList = document.getElementById('tagList');
+  elements.categoryList = document.getElementById('categoryList');
+  elements.addCategoryBtn = document.getElementById('addCategoryBtn');
   elements.mobileTagList = document.getElementById('mobileTagList');
   elements.mobileNav = document.getElementById('mobileNav');
   elements.mobileNavItems = document.querySelectorAll('.mobile-nav__item[data-view]');
@@ -55,6 +59,7 @@ const initElements = () => {
   elements.noteContent = document.getElementById('noteContent');
   elements.noteTitle = document.getElementById('noteTitle');
   elements.noteTags = document.getElementById('noteTags');
+  elements.noteCategory = document.getElementById('noteCategory');
   elements.noteLastEdited = document.getElementById('noteLastEdited');
   elements.noteBody = document.getElementById('noteBody');
   
@@ -63,6 +68,7 @@ const initElements = () => {
   elements.cancelNoteBtn = document.getElementById('cancelNoteBtn');
   elements.archiveNoteBtn = document.getElementById('archiveNoteBtn');
   elements.deleteNoteBtn = document.getElementById('deleteNoteBtn');
+  elements.shareNoteBtn = document.getElementById('shareNoteBtn');
   
   // FAB
   elements.fabCreateNote = document.getElementById('fabCreateNote');
@@ -104,6 +110,9 @@ const getNotesForCurrentView = () => {
       break;
     case 'tag':
       notes = noteManager.filterByTag(state.currentTag, false);
+      break;
+    case 'category':
+      notes = noteManager.filterByCategory(state.currentCategory);
       break;
     case 'all':
     default:
@@ -202,6 +211,30 @@ const renderTagsList = () => {
 };
 
 /**
+ * Render the categories list
+ */
+const renderCategoryList = () => {
+   const categories = noteManager.getCategories();
+   ui.renderCategoryList(categories, state.currentCategory, elements.categoryList);
+   
+   // Update the select dropdown in note editor
+   if (elements.noteCategory) {
+       const currentVal = elements.noteCategory.value;
+       elements.noteCategory.innerHTML = categories.map(c => 
+           `<option value="${escapeHTML(c)}">${escapeHTML(c)}</option>`
+       ).join('');
+       
+       // Restore value if it exists in the new list, otherwise default is 'Uncategorized' (first usually if Uncategorized is first)
+       // Uncategorized should be available.
+       if (categories.includes(currentVal)) {
+           elements.noteCategory.value = currentVal;
+       } else {
+           elements.noteCategory.value = 'Uncategorized';
+       }
+   }
+};
+
+/**
  * Select a note for viewing/editing
  */
 const selectNote = (noteId) => {
@@ -221,7 +254,8 @@ const selectNote = (noteId) => {
       titleInput: elements.noteTitle,
       tagsInput: elements.noteTags,
       lastEditedSpan: elements.noteLastEdited,
-      bodyTextarea: elements.noteBody
+      bodyTextarea: elements.noteBody,
+      categorySelect: elements.noteCategory
     });
     
     ui.toggleEmptyState(false, elements.emptyState, elements.noteContent);
@@ -317,7 +351,8 @@ const createNewNote = () => {
     titleInput: elements.noteTitle,
     tagsInput: elements.noteTags,
     lastEditedSpan: elements.noteLastEdited,
-    bodyTextarea: elements.noteBody
+    bodyTextarea: elements.noteBody,
+    categorySelect: elements.noteCategory
   });
   
   ui.toggleEmptyState(false, elements.emptyState, elements.noteContent);
@@ -331,6 +366,7 @@ const createNewNote = () => {
   
   renderNotesList();
   renderTagsList();
+  renderCategoryList();
   
   // Focus on title input
   if (elements.noteTitle) {
@@ -347,6 +383,7 @@ const saveCurrentNote = () => {
   const title = elements.noteTitle?.value.trim() || '';
   const content = elements.noteBody?.value || '';
   const tags = elements.noteTags?.value || '';
+  const category = elements.noteCategory?.value || 'Uncategorized';
   
   // Validate
   if (!title) {
@@ -361,7 +398,8 @@ const saveCurrentNote = () => {
   const updatedNote = noteManager.updateNote(state.activeNoteId, {
     title,
     content,
-    tags
+    tags,
+    category
   });
   
   if (updatedNote) {
@@ -374,6 +412,7 @@ const saveCurrentNote = () => {
     
     renderNotesList();
     renderTagsList();
+    renderCategoryList();
     
     ui.showToast('Note saved successfully!', 'success');
   }
@@ -479,6 +518,28 @@ const deleteCurrentNote = () => {
 };
 
 /**
+ * Share the current note
+ */
+const shareCurrentNote = async () => {
+  if (!state.activeNoteId) return;
+  
+  const note = noteManager.getNoteById(state.activeNoteId);
+  if (!note) return;
+  
+  // Check if note has content
+  if (!note.title) {
+    ui.showToast('Please add a title before sharing', 'error');
+    return;
+  }
+  
+  // Save note first to ensure latest content is shared
+  saveCurrentNote();
+  
+  // Share and copy link
+  await sharing.shareNoteAndCopy(note);
+};
+
+/**
  * Confirm delete action
  */
 const confirmDelete = () => {
@@ -534,11 +595,12 @@ const handleMobileSearch = ui.debounce((query) => {
 }, 300);
 
 /**
- * Change view (All Notes, Archived, Tag)
+ * Change view (All Notes, Archived, Tag, Category)
  */
-const changeView = (view, tag = null) => {
+const changeView = (view, filterValue = null) => {
   state.currentView = view;
-  state.currentTag = tag;
+  state.currentTag = view === 'tag' ? filterValue : null;
+  state.currentCategory = view === 'category' ? filterValue : null;
   
   // Update page title
   if (elements.pageTitle) {
@@ -547,7 +609,10 @@ const changeView = (view, tag = null) => {
         elements.pageTitle.textContent = 'Archived Notes';
         break;
       case 'tag':
-        elements.pageTitle.textContent = tag || 'Tagged Notes';
+        elements.pageTitle.textContent = filterValue ? `Tag: ${filterValue}` : 'Tagged Notes';
+        break;
+      case 'category':
+        elements.pageTitle.textContent = filterValue || 'Category';
         break;
       default:
         elements.pageTitle.textContent = 'All Notes';
@@ -556,6 +621,17 @@ const changeView = (view, tag = null) => {
   
   // Update navigation active states
   ui.updateNavActiveState(view, elements.navLinks);
+  
+  // Update Category active state manually as it's not in standard navLinks
+  if (elements.categoryList) {
+      const links = elements.categoryList.querySelectorAll('.nav-link');
+      links.forEach(l => {
+          const isActive = view === 'category' && l.dataset.category === filterValue;
+          l.classList.toggle('nav-link--active', isActive);
+          l.setAttribute('aria-pressed', isActive);
+      });
+  }
+
   ui.updateMobileNavActiveState(view, elements.mobileNavItems);
   
   // Clear search
@@ -568,6 +644,7 @@ const changeView = (view, tag = null) => {
   
   renderNotesList();
   renderTagsList();
+  renderCategoryList();
 };
 
 /**
@@ -635,6 +712,45 @@ const setupEventListeners = () => {
       elements.tagsOverlay.hidden = true;
     }
   });
+
+  // Category list clicks (event delegation)
+  elements.categoryList?.addEventListener('click', (e) => {
+    // Check if delete button
+    const deleteBtn = e.target.closest('.delete-category-btn');
+    if (deleteBtn) {
+        e.stopPropagation(); 
+        const category = deleteBtn.dataset.category;
+        if (confirm(`Delete category "${category}"? Notes will be moved to Uncategorized.`)) {
+            noteManager.deleteCategory(category);
+            renderCategoryList();
+            // If current view was this category, switch to all
+            if (state.currentView === 'category' && state.currentCategory === category) {
+                changeView('all');
+            } else {
+                renderNotesList(); 
+            }
+        }
+        return;
+    }
+
+    const navLink = e.target.closest('.nav-link');
+    if (navLink) {
+        const category = navLink.dataset.category;
+        changeView('category', category); 
+    }
+  });
+
+  // Add category button
+  elements.addCategoryBtn?.addEventListener('click', () => {
+    const category = prompt('Enter new category name:');
+    if (category) {
+        if (noteManager.addCategory(category)) {
+            renderCategoryList();
+        } else {
+            alert('Category already exists, invalid, or empty.');
+        }
+    }
+  });
   
   // Notes list clicks (event delegation)
   const handleNoteClick = (e) => {
@@ -681,9 +797,10 @@ const setupEventListeners = () => {
   elements.saveNoteBtn?.addEventListener('click', saveCurrentNote);
   elements.cancelNoteBtn?.addEventListener('click', cancelEditing);
   
-  // Archive/Delete buttons
+  // Archive/Delete/Share buttons
   elements.archiveNoteBtn?.addEventListener('click', toggleArchiveNote);
   elements.deleteNoteBtn?.addEventListener('click', deleteCurrentNote);
+  elements.shareNoteBtn?.addEventListener('click', shareCurrentNote);
   
   // Mobile header buttons
   elements.goBackBtn?.addEventListener('click', handleGoBack);
@@ -721,6 +838,7 @@ const setupEventListeners = () => {
   elements.noteTitle?.addEventListener('input', trackChanges);
   elements.noteTags?.addEventListener('input', trackChanges);
   elements.noteBody?.addEventListener('input', trackChanges);
+  elements.noteCategory?.addEventListener('change', trackChanges);
   
   // Auto-save draft on input
   const saveDraft = ui.debounce(() => {
@@ -867,6 +985,7 @@ const init = async () => {
   // Initial render
   renderNotesList();
   renderTagsList();
+  renderCategoryList();
   
   // Restore draft if available
   restoreDraft();

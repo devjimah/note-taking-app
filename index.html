@@ -79,6 +79,14 @@
             </li>
           </ul>
           <div class="divider"></div>
+          <div class="categories-section">
+            <span class="tags-section__title">Categories</span>
+            <ul class="nav-list" id="categoryList" aria-label="Filter by category">
+              <!-- Categories dynamically rendered -->
+            </ul>
+             <button class="btn btn--text" id="addCategoryBtn" style="margin-left: 1rem; margin-top: 0.5rem; font-size: 0.8rem;">+ Add Category</button>
+          </div>
+          <div class="divider"></div>
           <div class="tags-section">
             <span class="tags-section__title">Tags</span>
             <ul class="tag-list" id="tagList" aria-label="Filter by tag">
@@ -223,6 +231,20 @@
               <div class="meta-item">
                 <div class="meta-item__name">
                   <img
+                    src="./assets/images/icon-menu.svg"
+                    alt=""
+                    class="meta-item__icon"
+                    aria-hidden="true"
+                  />
+                  <span class="meta-item__label">Category</span>
+                </div>
+                <select class="meta-item__input" id="noteCategory" style="border: none; background: transparent; width: 100%; font-family: inherit; font-size: inherit; color: inherit;">
+                  <!-- Options filled dynamically -->
+                </select>
+              </div>
+              <div class="meta-item">
+                <div class="meta-item__name">
+                  <img
                     src="./assets/images/icon-tag.svg"
                     alt=""
                     class="meta-item__icon"
@@ -272,6 +294,12 @@
 
         <!-- Right Sidebar Actions -->
         <aside class="sidebar sidebar--actions" id="sidebarActions" hidden>
+          <button class="btn btn--outline btn--full" id="shareNoteBtn">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+              <path d="M13.5 1a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zM11 2.5a2.5 2.5 0 1 1 .603 1.628l-6.718 3.12a2.499 2.499 0 0 1 0 1.504l6.718 3.12a2.5 2.5 0 1 1-.488.876l-6.718-3.12a2.5 2.5 0 1 1 0-3.256l6.718-3.12A2.5 2.5 0 0 1 11 2.5zm-8.5 4a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm11 5.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3z"/>
+            </svg>
+            <span>Share Note</span>
+          </button>
           <button class="btn btn--outline btn--full" id="archiveNoteBtn">
             <img
               src="./assets/images/icon-archive.svg"

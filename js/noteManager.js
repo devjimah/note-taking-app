@@ -3,7 +3,7 @@
  * Handles note data management and business logic
  */
 
-import { saveNotes, loadNotes } from './storage.js';
+import { saveNotes, loadNotes, saveCategories, loadCategories } from './storage.js';
 
 // Initial data will be loaded via fetch if needed
 let initialData = null;
@@ -13,11 +13,12 @@ let initialData = null;
  * Represents a single note with all its properties
  */
 export class Note {
-  constructor({ id, title, content, tags = [], lastEdited, isArchived = false, location = null }) {
+  constructor({ id, title, content, tags = [], category = 'Uncategorized', lastEdited, isArchived = false, location = null }) {
     this.id = id || generateId();
     this.title = title || '';
     this.content = content || '';
     this.tags = Array.isArray(tags) ? tags : [];
+    this.category = category || 'Uncategorized';
     this.lastEdited = lastEdited || new Date().toISOString();
     this.isArchived = isArchived;
     this.location = location;
@@ -75,6 +76,7 @@ export class Note {
     if (updates.title !== undefined) this.title = updates.title;
     if (updates.content !== undefined) this.content = updates.content;
     if (updates.tags !== undefined) this.tags = updates.tags;
+    if (updates.category !== undefined) this.category = updates.category;
     if (updates.isArchived !== undefined) this.isArchived = updates.isArchived;
     if (updates.location !== undefined) this.location = updates.location;
     this.lastEdited = new Date().toISOString();
@@ -90,6 +92,7 @@ export class Note {
       title: this.title,
       content: this.content,
       tags: this.tags,
+      category: this.category,
       lastEdited: this.lastEdited,
       isArchived: this.isArchived,
       location: this.location
@@ -99,6 +102,7 @@ export class Note {
 
 // Notes state
 let notes = [];
+let categories = [];
 
 /**
  * Generate a unique ID
@@ -131,6 +135,9 @@ const loadInitialData = async () => {
  * @param {boolean} async - Whether to load initial data asynchronously
  */
 export const initializeNotes = async () => {
+  // Load categories first
+  categories = loadCategories();
+
   const storedNotes = loadNotes();
   
   if (storedNotes && storedNotes.length > 0) {
@@ -148,6 +155,64 @@ export const initializeNotes = async () => {
   }
   
   return notes;
+};
+
+/**
+ * Get all categories
+ * @returns {Array<string>} Array of categories
+ */
+export const getCategories = () => {
+  return [...categories];
+};
+
+/**
+ * Add a new category
+ * @param {string} category - Category name
+ * @returns {boolean} Success
+ */
+export const addCategory = (category) => {
+  const trimmed = category.trim();
+  if (trimmed && !categories.includes(trimmed)) {
+    categories.push(trimmed);
+    categories.sort();
+    saveCategories(categories);
+    return true;
+  }
+  return false;
+};
+
+/**
+ * Delete a category
+ * @param {string} category - Category name
+ * @returns {boolean} Success
+ */
+export const deleteCategory = (category) => {
+  if (category === 'Uncategorized') return false; // Prevent deleting default
+  
+  const index = categories.indexOf(category);
+  if (index > -1) {
+    categories.splice(index, 1);
+    saveCategories(categories);
+    
+    // Move notes in this category to 'Uncategorized'
+    notes.forEach(note => {
+      if (note.category === category) {
+        note.category = 'Uncategorized';
+      }
+    });
+    saveNotes(notes.map(n => n.toJSON()));
+    return true;
+  }
+  return false;
+};
+
+/**
+ * Filter notes by category
+ * @param {string} category - Category name
+ * @returns {Array<Note>} Filtered notes
+ */
+export const filterByCategory = (category) => {
+   return notes.filter(n => n.category === category);
 };
 
 /**
@@ -368,5 +433,75 @@ export const sortNotes = (notesToSort, sortBy = 'date', order = 'desc') => {
   });
   
   return sorted;
+};
+
+/**
+ * Export all notes as JSON
+ */
+export const exportNotes = () => {
+  const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(notes.map(n => n.toJSON()), null, 2));
+  const downloadAnchorNode = document.createElement('a');
+  downloadAnchorNode.setAttribute("href", dataStr);
+  downloadAnchorNode.setAttribute("download", "notes_export_" + new Date().toISOString().slice(0, 10) + ".json");
+  document.body.appendChild(downloadAnchorNode);
+  downloadAnchorNode.click();
+  downloadAnchorNode.remove();
+};
+
+/**
+ * Import notes from JSON string
+ * @param {string} jsonContent - JSON string content
+ * @returns {Object} Result object { success: boolean, count: number, message: string }
+ */
+export const importNotes = (jsonContent) => {
+  try {
+    const importedData = JSON.parse(jsonContent);
+    
+    // Validate it's an array
+    if (!Array.isArray(importedData)) {
+      return { success: false, message: 'Invalid format: Root must be an array of notes' };
+    }
+
+    let addedCount = 0;
+    const existingIds = new Set(notes.map(n => n.id));
+
+    importedData.forEach(item => {
+      // Basic validation: must have title or content
+      if (typeof item !== 'object' || (!item.title && !item.content)) {
+        return;
+      }
+
+      // Prevent duplicate notes by ID
+      if (item.id && existingIds.has(item.id)) {
+        return;
+      }
+
+      // Create new note
+      const newNote = new Note({
+        id: item.id, // Note constructor will generate ID if this is missing
+        title: item.title,
+        content: item.content,
+        tags: item.tags,
+        lastEdited: item.lastEdited,
+        isArchived: item.isArchived,
+        location: item.location
+      });
+      
+      notes.push(newNote);
+      existingIds.add(newNote.id);
+      addedCount++;
+    });
+
+    if (addedCount > 0) {
+      saveNotes(notes.map(n => n.toJSON()));
+      return { success: true, count: addedCount, message: `Successfully imported ${addedCount} notes.` };
+    } else {
+      return { success: true, count: 0, message: 'No new notes found to import.' };
+    }
+
+  } catch (e) {
+    console.error('Import error:', e);
+    return { success: false, message: 'Invalid JSON file.' };
+  }
 };
 
