@@ -22,6 +22,7 @@ const initElements = () => {
   elements.colorThemeSection = document.getElementById('colorThemeSection');
   elements.fontThemeSection = document.getElementById('fontThemeSection');
   elements.changePasswordSection = document.getElementById('changePasswordSection');
+  elements.dataManagementSection = document.getElementById('dataManagementSection');
   
   // Theme inputs
   elements.colorThemeInputs = document.querySelectorAll('input[name="colorTheme"]');
@@ -30,6 +31,11 @@ const initElements = () => {
   // Apply buttons
   elements.applyColorThemeBtn = document.getElementById('applyColorThemeBtn');
   elements.applyFontThemeBtn = document.getElementById('applyFontThemeBtn');
+
+  // Data management
+  elements.exportNotesBtn = document.getElementById('exportNotesBtn');
+  elements.importNotesBtn = document.getElementById('importNotesBtn');
+  elements.importNotesInput = document.getElementById('importNotesInput');
   
   // Change password form
   elements.changePasswordForm = document.getElementById('changePasswordForm');
@@ -43,7 +49,7 @@ const initElements = () => {
 
 /**
  * Show a settings section
- * @param {string} sectionId - Section to show ('color-theme', 'font-theme', 'change-password')
+ * @param {string} sectionId - Section to show ('color-theme', 'font-theme', 'change-password', 'data-management')
  */
 const showSection = (sectionId) => {
   // Hide all sections
@@ -51,6 +57,9 @@ const showSection = (sectionId) => {
   elements.fontThemeSection.hidden = true;
   if (elements.changePasswordSection) {
     elements.changePasswordSection.hidden = true;
+  }
+  if (elements.dataManagementSection) {
+    elements.dataManagementSection.hidden = true;
   }
   
   // Show selected section
@@ -64,6 +73,11 @@ const showSection = (sectionId) => {
     case 'change-password':
       if (elements.changePasswordSection) {
         elements.changePasswordSection.hidden = false;
+      }
+      break;
+    case 'data-management':
+      if (elements.dataManagementSection) {
+        elements.dataManagementSection.hidden = false;
       }
       break;
     case 'logout':
@@ -229,6 +243,37 @@ const setupEventListeners = () => {
   elements.applyColorThemeBtn?.addEventListener('click', applyColorTheme);
   elements.applyFontThemeBtn?.addEventListener('click', applyFontTheme);
   
+  // Data Management
+  elements.exportNotesBtn?.addEventListener('click', () => {
+    noteManager.exportNotes();
+  });
+  
+  elements.importNotesBtn?.addEventListener('click', () => {
+    elements.importNotesInput?.click();
+  });
+  
+  elements.importNotesInput?.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = async (e) => {
+        const content = e.target.result;
+        const result = noteManager.importNotes(content);
+        
+        if (result.success) {
+            ui.showToast(result.message, 'success');
+            await renderTagsList();
+        } else {
+            ui.showToast(result.message, 'error');
+        }
+        
+        // Reset input
+        elements.importNotesInput.value = '';
+      };
+      reader.readAsText(file);
+    }
+  });
+
   // Change password form
   elements.changePasswordForm?.addEventListener('submit', handleChangePassword);
   
