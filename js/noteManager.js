@@ -370,3 +370,73 @@ export const sortNotes = (notesToSort, sortBy = 'date', order = 'desc') => {
   return sorted;
 };
 
+/**
+ * Export all notes as JSON
+ */
+export const exportNotes = () => {
+  const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(notes.map(n => n.toJSON()), null, 2));
+  const downloadAnchorNode = document.createElement('a');
+  downloadAnchorNode.setAttribute("href", dataStr);
+  downloadAnchorNode.setAttribute("download", "notes_export_" + new Date().toISOString().slice(0, 10) + ".json");
+  document.body.appendChild(downloadAnchorNode);
+  downloadAnchorNode.click();
+  downloadAnchorNode.remove();
+};
+
+/**
+ * Import notes from JSON string
+ * @param {string} jsonContent - JSON string content
+ * @returns {Object} Result object { success: boolean, count: number, message: string }
+ */
+export const importNotes = (jsonContent) => {
+  try {
+    const importedData = JSON.parse(jsonContent);
+    
+    // Validate it's an array
+    if (!Array.isArray(importedData)) {
+      return { success: false, message: 'Invalid format: Root must be an array of notes' };
+    }
+
+    let addedCount = 0;
+    const existingIds = new Set(notes.map(n => n.id));
+
+    importedData.forEach(item => {
+      // Basic validation: must have title or content
+      if (typeof item !== 'object' || (!item.title && !item.content)) {
+        return;
+      }
+
+      // Prevent duplicate notes by ID
+      if (item.id && existingIds.has(item.id)) {
+        return;
+      }
+
+      // Create new note
+      const newNote = new Note({
+        id: item.id, // Note constructor will generate ID if this is missing
+        title: item.title,
+        content: item.content,
+        tags: item.tags,
+        lastEdited: item.lastEdited,
+        isArchived: item.isArchived,
+        location: item.location
+      });
+      
+      notes.push(newNote);
+      existingIds.add(newNote.id);
+      addedCount++;
+    });
+
+    if (addedCount > 0) {
+      saveNotes(notes.map(n => n.toJSON()));
+      return { success: true, count: addedCount, message: `Successfully imported ${addedCount} notes.` };
+    } else {
+      return { success: true, count: 0, message: 'No new notes found to import.' };
+    }
+
+  } catch (e) {
+    console.error('Import error:', e);
+    return { success: false, message: 'Invalid JSON file.' };
+  }
+};
+
