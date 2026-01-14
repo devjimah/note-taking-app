@@ -7,6 +7,7 @@ import * as storage from './storage.js';
 import * as noteManager from './noteManager.js';
 import * as ui from './ui.js';
 import * as themes from './themes.js';
+import * as richTextEditor from './richTextEditor.js';
 
 // Application State
 const state = {
@@ -61,6 +62,7 @@ const initElements = () => {
   elements.noteCategory = document.getElementById('noteCategory');
   elements.noteLastEdited = document.getElementById('noteLastEdited');
   elements.noteBody = document.getElementById('noteBody');
+  elements.formattingToolbar = document.getElementById('formattingToolbar');
   
   // Action Buttons
   elements.saveNoteBtn = document.getElementById('saveNoteBtn');
@@ -379,7 +381,8 @@ const saveCurrentNote = () => {
   if (!state.activeNoteId) return;
   
   const title = elements.noteTitle?.value.trim() || '';
-  const content = elements.noteBody?.value || '';
+  // Get rich text content (innerHTML for contenteditable div)
+  const content = elements.noteBody?.innerHTML || '';
   const tags = elements.noteTags?.value || '';
   const category = elements.noteCategory?.value || 'Uncategorized';
   
@@ -627,6 +630,11 @@ const changeView = (view, filterValue = null) => {
  * Set up event listeners
  */
 const setupEventListeners = () => {
+  // Initialize rich text editor toolbar
+  if (elements.formattingToolbar && elements.noteBody) {
+    richTextEditor.initRichTextEditor(elements.noteBody, elements.formattingToolbar);
+  }
+  
   // Navigation links
   elements.navLinks.forEach(link => {
     link.addEventListener('click', (e) => {

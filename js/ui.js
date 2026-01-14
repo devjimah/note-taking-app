@@ -84,7 +84,14 @@ export const renderNoteContent = (note, elements) => {
     if (titleInput) titleInput.value = '';
     if (tagsInput) tagsInput.value = '';
     if (lastEditedSpan) lastEditedSpan.textContent = '—';
-    if (bodyTextarea) bodyTextarea.value = '';
+    // Handle both textarea and contenteditable div
+    if (bodyTextarea) {
+      if (bodyTextarea.tagName === 'TEXTAREA') {
+        bodyTextarea.value = '';
+      } else {
+        bodyTextarea.innerHTML = '';
+      }
+    }
     if (categorySelect) categorySelect.value = 'Uncategorized';
     return;
   }
@@ -92,7 +99,15 @@ export const renderNoteContent = (note, elements) => {
   if (titleInput) titleInput.value = note.title || '';
   if (tagsInput) tagsInput.value = note.tags.join(', ');
   if (lastEditedSpan) lastEditedSpan.textContent = formatDate(note.lastEdited);
-  if (bodyTextarea) bodyTextarea.value = note.content || '';
+  // Handle both textarea and contenteditable div
+  if (bodyTextarea) {
+    if (bodyTextarea.tagName === 'TEXTAREA') {
+      bodyTextarea.value = note.content || '';
+    } else {
+      // For contenteditable, set innerHTML to preserve formatting
+      bodyTextarea.innerHTML = note.content || '';
+    }
+  }
   if (categorySelect) categorySelect.value = note.category || 'Uncategorized';
 };
 
