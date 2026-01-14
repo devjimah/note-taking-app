@@ -568,6 +568,14 @@ ol {
   color: var(--color-text);
 }
 
+/* Category badge styling */
+.note-item__tag--category {
+  background-color: var(--color-blue-50);
+  color: var(--color-primary);
+  border: 1px solid var(--color-primary);
+  font-weight: 500;
+}
+
 .note-item__date {
   font-size: var(--text-preset-6-size);
   font-weight: var(--text-preset-6-weight);
