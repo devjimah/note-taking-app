@@ -841,6 +841,109 @@ ol {
   outline: none;
 }
 
+/* Rich Text Editor Styles */
+.note-content__body--rich {
+  overflow-y: auto;
+  padding: var(--spacing-100);
+  border-radius: var(--radius-4);
+}
+
+.note-content__body--rich:empty::before {
+  content: attr(data-placeholder);
+  color: var(--color-text-tertiary);
+  pointer-events: none;
+}
+
+.note-content__body--rich:focus {
+  background-color: var(--color-bg-secondary);
+}
+
+/* Rich text content styling */
+.note-content__body--rich strong,
+.note-content__body--rich b {
+  font-weight: 700;
+}
+
+.note-content__body--rich em,
+.note-content__body--rich i {
+  font-style: italic;
+}
+
+.note-content__body--rich u {
+  text-decoration: underline;
+}
+
+.note-content__body--rich s {
+  text-decoration: line-through;
+}
+
+.note-content__body--rich ul,
+.note-content__body--rich ol {
+  margin: var(--spacing-100) 0;
+  padding-left: var(--spacing-300);
+}
+
+.note-content__body--rich li {
+  margin: var(--spacing-50) 0;
+}
+
+.note-content__body--rich ul li {
+  list-style-type: disc;
+}
+
+.note-content__body--rich ol li {
+  list-style-type: decimal;
+}
+
+/* Formatting Toolbar */
+.formatting-toolbar {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-50);
+  padding: var(--spacing-100);
+  background-color: var(--color-bg-secondary);
+  border-radius: var(--radius-8);
+  flex-wrap: wrap;
+}
+
+.formatting-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: transparent;
+  border-radius: var(--radius-4);
+  cursor: pointer;
+  color: var(--color-text-secondary);
+  font-size: 14px;
+  transition: background-color var(--transition-fast), color var(--transition-fast);
+}
+
+.formatting-btn:hover {
+  background-color: var(--color-bg-tertiary);
+  color: var(--color-text);
+}
+
+.formatting-btn:active,
+.formatting-btn.active {
+  background-color: var(--color-primary);
+  color: var(--color-white);
+}
+
+.formatting-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+.formatting-divider {
+  width: 1px;
+  height: 20px;
+  background-color: var(--color-border);
+  margin: 0 var(--spacing-50);
+}
+
 /* Note Actions */
 .note-content__actions {
   display: flex;
