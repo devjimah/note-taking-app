@@ -7,6 +7,7 @@ import * as storage from './storage.js';
 import * as themes from './themes.js';
 import * as noteManager from './noteManager.js';
 import * as ui from './ui.js';
+import * as exportImport from './exportImport.js';
 
 // DOM Elements
 const elements = {};
@@ -22,6 +23,7 @@ const initElements = () => {
   elements.colorThemeSection = document.getElementById('colorThemeSection');
   elements.fontThemeSection = document.getElementById('fontThemeSection');
   elements.changePasswordSection = document.getElementById('changePasswordSection');
+  elements.dataManagementSection = document.getElementById('dataManagementSection');
   
   // Theme inputs
   elements.colorThemeInputs = document.querySelectorAll('input[name="colorTheme"]');
@@ -34,6 +36,10 @@ const initElements = () => {
   // Change password form
   elements.changePasswordForm = document.getElementById('changePasswordForm');
   
+  // Data management
+  elements.exportNotesBtn = document.getElementById('exportNotesBtn');
+  elements.importNotesInput = document.getElementById('importNotesInput');
+  
   // Tag list
   elements.tagList = document.getElementById('tagList');
   
@@ -43,7 +49,7 @@ const initElements = () => {
 
 /**
  * Show a settings section
- * @param {string} sectionId - Section to show ('color-theme', 'font-theme', 'change-password')
+ * @param {string} sectionId - Section to show ('color-theme', 'font-theme', 'change-password', 'data-management')
  */
 const showSection = (sectionId) => {
   // Hide all sections
@@ -51,6 +57,9 @@ const showSection = (sectionId) => {
   elements.fontThemeSection.hidden = true;
   if (elements.changePasswordSection) {
     elements.changePasswordSection.hidden = true;
+  }
+  if (elements.dataManagementSection) {
+    elements.dataManagementSection.hidden = true;
   }
   
   // Show selected section
@@ -64,6 +73,11 @@ const showSection = (sectionId) => {
     case 'change-password':
       if (elements.changePasswordSection) {
         elements.changePasswordSection.hidden = false;
+      }
+      break;
+    case 'data-management':
+      if (elements.dataManagementSection) {
+        elements.dataManagementSection.hidden = false;
       }
       break;
     case 'logout':
@@ -228,6 +242,18 @@ const setupEventListeners = () => {
   // Apply buttons
   elements.applyColorThemeBtn?.addEventListener('click', applyColorTheme);
   elements.applyFontThemeBtn?.addEventListener('click', applyFontTheme);
+  
+  // Data management - Export/Import
+  elements.exportNotesBtn?.addEventListener('click', () => {
+    exportImport.exportNotes();
+  });
+  
+  elements.importNotesInput?.addEventListener('change', (e) => {
+    exportImport.handleImportFile(e, () => {
+      // Refresh tags list after import
+      renderTagsList();
+    });
+  });
   
   // Change password form
   elements.changePasswordForm?.addEventListener('submit', handleChangePassword);
