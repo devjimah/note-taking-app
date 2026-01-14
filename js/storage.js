@@ -7,7 +7,8 @@ const STORAGE_KEYS = {
   NOTES: 'notes_app_notes',
   PREFERENCES: 'notes_app_preferences',
   DRAFT: 'notes_app_draft',
-  AUTH: 'notes_app_auth'
+  AUTH: 'notes_app_auth',
+  CATEGORIES: 'notes_app_categories'
 };
 
 /**
@@ -39,6 +40,34 @@ export const loadNotes = () => {
   } catch (error) {
     console.error('Error loading notes:', error);
     return null;
+  }
+};
+
+/**
+ * Save categories to localStorage
+ * @param {Array} categories - Array of category strings
+ */
+export const saveCategories = (categories) => {
+  try {
+    localStorage.setItem(STORAGE_KEYS.CATEGORIES, JSON.stringify(categories));
+    return true;
+  } catch (error) {
+    console.error('Error saving categories:', error);
+    return false;
+  }
+};
+
+/**
+ * Load categories from localStorage
+ * @returns {Array} Array of category strings
+ */
+export const loadCategories = () => {
+  try {
+    const categories = localStorage.getItem(STORAGE_KEYS.CATEGORIES);
+    return categories ? JSON.parse(categories) : ['Personal', 'Work', 'Ideas'];
+  } catch (error) {
+    console.error('Error loading categories:', error);
+    return ['Personal', 'Work', 'Ideas'];
   }
 };
 

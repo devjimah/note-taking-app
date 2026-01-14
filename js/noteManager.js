@@ -3,7 +3,7 @@
  * Handles note data management and business logic
  */
 
-import { saveNotes, loadNotes } from './storage.js';
+import { saveNotes, loadNotes, saveCategories, loadCategories } from './storage.js';
 
 // Initial data will be loaded via fetch if needed
 let initialData = null;
@@ -13,11 +13,12 @@ let initialData = null;
  * Represents a single note with all its properties
  */
 export class Note {
-  constructor({ id, title, content, tags = [], lastEdited, isArchived = false, location = null }) {
+  constructor({ id, title, content, tags = [], category = 'Uncategorized', lastEdited, isArchived = false, location = null }) {
     this.id = id || generateId();
     this.title = title || '';
     this.content = content || '';
     this.tags = Array.isArray(tags) ? tags : [];
+    this.category = category || 'Uncategorized';
     this.lastEdited = lastEdited || new Date().toISOString();
     this.isArchived = isArchived;
     this.location = location;
@@ -75,6 +76,7 @@ export class Note {
     if (updates.title !== undefined) this.title = updates.title;
     if (updates.content !== undefined) this.content = updates.content;
     if (updates.tags !== undefined) this.tags = updates.tags;
+    if (updates.category !== undefined) this.category = updates.category;
     if (updates.isArchived !== undefined) this.isArchived = updates.isArchived;
     if (updates.location !== undefined) this.location = updates.location;
     this.lastEdited = new Date().toISOString();
@@ -90,6 +92,7 @@ export class Note {
       title: this.title,
       content: this.content,
       tags: this.tags,
+      category: this.category,
       lastEdited: this.lastEdited,
       isArchived: this.isArchived,
       location: this.location
@@ -99,6 +102,7 @@ export class Note {
 
 // Notes state
 let notes = [];
+let categories = [];
 
 /**
  * Generate a unique ID
@@ -131,6 +135,9 @@ const loadInitialData = async () => {
  * @param {boolean} async - Whether to load initial data asynchronously
  */
 export const initializeNotes = async () => {
+  // Load categories first
+  categories = loadCategories();
+
   const storedNotes = loadNotes();
   
   if (storedNotes && storedNotes.length > 0) {
@@ -148,6 +155,64 @@ export const initializeNotes = async () => {
   }
   
   return notes;
+};
+
+/**
+ * Get all categories
+ * @returns {Array<string>} Array of categories
+ */
+export const getCategories = () => {
+  return [...categories];
+};
+
+/**
+ * Add a new category
+ * @param {string} category - Category name
+ * @returns {boolean} Success
+ */
+export const addCategory = (category) => {
+  const trimmed = category.trim();
+  if (trimmed && !categories.includes(trimmed)) {
+    categories.push(trimmed);
+    categories.sort();
+    saveCategories(categories);
+    return true;
+  }
+  return false;
+};
+
+/**
+ * Delete a category
+ * @param {string} category - Category name
+ * @returns {boolean} Success
+ */
+export const deleteCategory = (category) => {
+  if (category === 'Uncategorized') return false; // Prevent deleting default
+  
+  const index = categories.indexOf(category);
+  if (index > -1) {
+    categories.splice(index, 1);
+    saveCategories(categories);
+    
+    // Move notes in this category to 'Uncategorized'
+    notes.forEach(note => {
+      if (note.category === category) {
+        note.category = 'Uncategorized';
+      }
+    });
+    saveNotes(notes.map(n => n.toJSON()));
+    return true;
+  }
+  return false;
+};
+
+/**
+ * Filter notes by category
+ * @param {string} category - Category name
+ * @returns {Array<Note>} Filtered notes
+ */
+export const filterByCategory = (category) => {
+   return notes.filter(n => n.category === category);
 };
 
 /**
