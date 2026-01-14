@@ -167,6 +167,17 @@
                   <span>Change Password</span>
                 </button>
               </li>
+              <li>
+                <button class="settings-nav__item" data-setting="data-management">
+                  <img
+                    src="./assets/images/icon-archive.svg"
+                    alt=""
+                    class="settings-nav__icon"
+                    aria-hidden="true"
+                  />
+                  <span>Data Management</span>
+                </button>
+              </li>
             </ul>
             <div class="divider"></div>
             <ul class="settings-nav">
@@ -548,6 +559,70 @@
                 </button>
               </div>
             </form>
+          </section>
+
+          <!-- Data Management Section -->
+          <section
+            class="settings-section"
+            id="dataManagementSection"
+            aria-labelledby="dataManagementTitle"
+            hidden
+          >
+            <div class="settings-section__header">
+              <h2 class="settings-section__title" id="dataManagementTitle">
+                Data Management
+              </h2>
+              <p class="settings-section__description">
+                Export your notes to a JSON file for backup or import notes from a previously exported file.
+              </p>
+            </div>
+            <div class="settings-section__body">
+              <div class="data-management-options">
+                <!-- Export Notes -->
+                <div class="data-option">
+                  <div class="data-option__info">
+                    <h3 class="data-option__title">Export Notes</h3>
+                    <p class="data-option__description">
+                      Download all your notes as a JSON file. This includes both active and archived notes.
+                    </p>
+                  </div>
+                  <button class="btn btn--primary" id="exportNotesBtn">
+                    <img
+                      src="./assets/images/icon-archive.svg"
+                      alt=""
+                      aria-hidden="true"
+                    />
+                    <span>Export All Notes</span>
+                  </button>
+                </div>
+
+                <div class="divider"></div>
+
+                <!-- Import Notes -->
+                <div class="data-option">
+                  <div class="data-option__info">
+                    <h3 class="data-option__title">Import Notes</h3>
+                    <p class="data-option__description">
+                      Import notes from a JSON file. Duplicate notes will be automatically skipped.
+                    </p>
+                  </div>
+                  <label class="btn btn--secondary" for="importNotesInput">
+                    <img
+                      src="./assets/images/icon-restore.svg"
+                      alt=""
+                      aria-hidden="true"
+                    />
+                    <span>Import Notes</span>
+                    <input
+                      type="file"
+                      id="importNotesInput"
+                      accept=".json"
+                      class="visually-hidden"
+                    />
+                  </label>
+                </div>
+              </div>
+            </div>
           </section>
         </div>
       </main>

@@ -7,6 +7,7 @@ import * as storage from './storage.js';
 import * as noteManager from './noteManager.js';
 import * as ui from './ui.js';
 import * as themes from './themes.js';
+import * as exportImport from './exportImport.js';
 
 // Application State
 const state = {
@@ -752,6 +753,12 @@ const setupEventListeners = () => {
     if ((e.ctrlKey || e.metaKey) && e.key === 'n') {
       e.preventDefault();
       createNewNote();
+    }
+    
+    // Ctrl/Cmd + E to export notes
+    if ((e.ctrlKey || e.metaKey) && e.key === 'e') {
+      e.preventDefault();
+      exportImport.exportNotes();
     }
     
     // Escape to close modals/overlays
