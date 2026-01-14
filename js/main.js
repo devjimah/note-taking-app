@@ -7,6 +7,7 @@ import * as storage from './storage.js';
 import * as noteManager from './noteManager.js';
 import * as ui from './ui.js';
 import * as themes from './themes.js';
+import * as sharing from './sharing.js';
 
 // Application State
 const state = {
@@ -67,6 +68,7 @@ const initElements = () => {
   elements.cancelNoteBtn = document.getElementById('cancelNoteBtn');
   elements.archiveNoteBtn = document.getElementById('archiveNoteBtn');
   elements.deleteNoteBtn = document.getElementById('deleteNoteBtn');
+  elements.shareNoteBtn = document.getElementById('shareNoteBtn');
   
   // FAB
   elements.fabCreateNote = document.getElementById('fabCreateNote');
@@ -516,6 +518,28 @@ const deleteCurrentNote = () => {
 };
 
 /**
+ * Share the current note
+ */
+const shareCurrentNote = async () => {
+  if (!state.activeNoteId) return;
+  
+  const note = noteManager.getNoteById(state.activeNoteId);
+  if (!note) return;
+  
+  // Check if note has content
+  if (!note.title) {
+    ui.showToast('Please add a title before sharing', 'error');
+    return;
+  }
+  
+  // Save note first to ensure latest content is shared
+  saveCurrentNote();
+  
+  // Share and copy link
+  await sharing.shareNoteAndCopy(note);
+};
+
+/**
  * Confirm delete action
  */
 const confirmDelete = () => {
@@ -773,9 +797,10 @@ const setupEventListeners = () => {
   elements.saveNoteBtn?.addEventListener('click', saveCurrentNote);
   elements.cancelNoteBtn?.addEventListener('click', cancelEditing);
   
-  // Archive/Delete buttons
+  // Archive/Delete/Share buttons
   elements.archiveNoteBtn?.addEventListener('click', toggleArchiveNote);
   elements.deleteNoteBtn?.addEventListener('click', deleteCurrentNote);
+  elements.shareNoteBtn?.addEventListener('click', shareCurrentNote);
   
   // Mobile header buttons
   elements.goBackBtn?.addEventListener('click', handleGoBack);
