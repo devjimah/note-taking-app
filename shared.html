@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light" data-font="sans-serif">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="./assets/images/favicon-32x32.png"
+    />
+    <link rel="stylesheet" href="./css/styles.css" />
+    <title>Shared Note | Notes App</title>
+    <style>
+      /* Shared note specific styles */
+      .shared-page {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        background-color: var(--color-bg);
+      }
+      
+      .shared-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: var(--spacing-200) var(--spacing-300);
+        border-bottom: 1px solid var(--color-border);
+        background-color: var(--color-bg);
+      }
+      
+      .shared-header__logo {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-100);
+      }
+      
+      .shared-header__logo img {
+        height: 32px;
+      }
+      
+      .shared-header__badge {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--spacing-50);
+        padding: var(--spacing-50) var(--spacing-100);
+        background-color: var(--color-bg-secondary);
+        border-radius: var(--radius-full);
+        font-size: var(--text-preset-6-size);
+        color: var(--color-text-secondary);
+      }
+      
+      .shared-header__badge svg {
+        width: 14px;
+        height: 14px;
+      }
+      
+      .shared-content {
+        flex: 1;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: var(--spacing-400) var(--spacing-300);
+        width: 100%;
+      }
+      
+      .shared-note {
+        background-color: var(--color-bg);
+        border-radius: var(--radius-12);
+        padding: var(--spacing-300);
+        border: 1px solid var(--color-border);
+      }
+      
+      .shared-note__title {
+        font-size: var(--text-preset-1-size);
+        font-weight: var(--text-preset-1-weight);
+        line-height: var(--text-preset-1-line-height);
+        letter-spacing: var(--text-preset-1-letter-spacing);
+        color: var(--color-text);
+        margin: 0 0 var(--spacing-200);
+      }
+      
+      .shared-note__meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--spacing-100);
+        margin-bottom: var(--spacing-200);
+        padding-bottom: var(--spacing-200);
+        border-bottom: 1px solid var(--color-border);
+      }
+      
+      .shared-note__tag {
+        display: inline-flex;
+        align-items: center;
+        padding: var(--spacing-50) var(--spacing-100);
+        background-color: var(--color-bg-tertiary);
+        border-radius: var(--radius-4);
+        font-size: var(--text-preset-6-size);
+        color: var(--color-text-secondary);
+      }
+      
+      .shared-note__content {
+        font-size: var(--text-preset-5-size);
+        line-height: 1.6;
+        color: var(--color-text);
+      }
+      
+      .shared-note__content p {
+        margin: 0 0 var(--spacing-200);
+      }
+      
+      .shared-note__content ul,
+      .shared-note__content ol {
+        margin: var(--spacing-100) 0;
+        padding-left: var(--spacing-300);
+      }
+      
+      .shared-note__content li {
+        margin: var(--spacing-50) 0;
+      }
+      
+      .shared-footer {
+        padding: var(--spacing-200) var(--spacing-300);
+        text-align: center;
+        border-top: 1px solid var(--color-border);
+        background-color: var(--color-bg-secondary);
+      }
+      
+      .shared-footer__text {
+        font-size: var(--text-preset-6-size);
+        color: var(--color-text-tertiary);
+      }
+      
+      .shared-footer__link {
+        color: var(--color-primary);
+        text-decoration: none;
+      }
+      
+      .shared-footer__link:hover {
+        text-decoration: underline;
+      }
+      
+      .error-state {
+        text-align: center;
+        padding: var(--spacing-600) var(--spacing-300);
+      }
+      
+      .error-state__icon {
+        width: 64px;
+        height: 64px;
+        margin-bottom: var(--spacing-200);
+        opacity: 0.5;
+      }
+      
+      .error-state__title {
+        font-size: var(--text-preset-2-size);
+        font-weight: var(--text-preset-2-weight);
+        color: var(--color-text);
+        margin: 0 0 var(--spacing-100);
+      }
+      
+      .error-state__text {
+        font-size: var(--text-preset-5-size);
+        color: var(--color-text-secondary);
+        margin: 0;
+      }
+      
+      /* Loading state */
+      .loading-state {
+        text-align: center;
+        padding: var(--spacing-600) var(--spacing-300);
+      }
+      
+      .loading-spinner {
+        width: 40px;
+        height: 40px;
+        border: 3px solid var(--color-border);
+        border-top-color: var(--color-primary);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin: 0 auto var(--spacing-200);
+      }
+      
+      @keyframes spin {
+        to { transform: rotate(360deg); }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="shared-page">
+      <!-- Header -->
+      <header class="shared-header">
+        <div class="shared-header__logo">
+          <img
+            src="./assets/images/logo.svg"
+            alt="Notes Logo"
+            class="logo logo--light"
+          />
+          <img
+            src="./assets/images/logo-dark.svg"
+            alt="Notes Logo"
+            class="logo logo--dark"
+          />
+        </div>
+        <span class="shared-header__badge">
+          <svg viewBox="0 0 16 16" fill="currentColor">
+            <path d="M8 1a2.5 2.5 0 0 0-2.5 2.5v1H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-6a2 2 0 0 0-2-2h-1.5v-1A2.5 2.5 0 0 0 8 1zm1.5 3.5v-1a1.5 1.5 0 0 0-3 0v1h3z"/>
+          </svg>
+          Read-only
+        </span>
+      </header>
+      
+      <!-- Content -->
+      <main class="shared-content" id="sharedContent">
+        <!-- Loading state -->
+        <div class="loading-state" id="loadingState">
+          <div class="loading-spinner"></div>
+          <p>Loading shared note...</p>
+        </div>
+        
+        <!-- Error state (hidden by default) -->
+        <div class="error-state" id="errorState" hidden>
+          <svg class="error-state__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M15 9l-6 6M9 9l6 6"/>
+          </svg>
+          <h1 class="error-state__title">Note Not Found</h1>
+          <p class="error-state__text">This shared note may have been removed or the link is invalid.</p>
+        </div>
+        
+        <!-- Shared note (hidden by default) -->
+        <article class="shared-note" id="sharedNote" hidden>
+          <h1 class="shared-note__title" id="noteTitle"></h1>
+          <div class="shared-note__meta" id="noteMeta">
+            <!-- Tags will be rendered here -->
+          </div>
+          <div class="shared-note__content" id="noteContent">
+            <!-- Content will be rendered here -->
+          </div>
+        </article>
+      </main>
+      
+      <!-- Footer -->
+      <footer class="shared-footer">
+        <p class="shared-footer__text">
+          Created with <a href="./index.html" class="shared-footer__link">Notes App</a>
+        </p>
+      </footer>
+    </div>
+    
+    <script type="module">
+      import { getSharedNote } from './js/sharing.js';
+      import * as themes from './js/themes.js';
+      
+      // Initialize themes
+      themes.initializeThemes();
+      
+      // Get share ID from URL
+      const urlParams = new URLSearchParams(window.location.search);
+      const shareId = urlParams.get('id');
+      
+      // DOM Elements
+      const loadingState = document.getElementById('loadingState');
+      const errorState = document.getElementById('errorState');
+      const sharedNote = document.getElementById('sharedNote');
+      const noteTitle = document.getElementById('noteTitle');
+      const noteMeta = document.getElementById('noteMeta');
+      const noteContent = document.getElementById('noteContent');
+      
+      /**
+       * Escape HTML to prevent XSS
+       */
+      const escapeHTML = (str) => {
+        if (!str) return '';
+        const div = document.createElement('div');
+        div.textContent = str;
+        return div.innerHTML;
+      };
+      
+      /**
+       * Render the shared note
+       */
+      const renderSharedNote = () => {
+        if (!shareId) {
+          showError();
+          return;
+        }
+        
+        const note = getSharedNote(shareId);
+        
+        if (!note) {
+          showError();
+          return;
+        }
+        
+        // Update page title
+        document.title = `${note.title} | Shared Note`;
+        
+        // Render title
+        noteTitle.textContent = note.title || 'Untitled Note';
+        
+        // Render tags
+        if (note.tags && note.tags.length > 0) {
+          noteMeta.innerHTML = note.tags.map(tag => 
+            `<span class="shared-note__tag">${escapeHTML(tag)}</span>`
+          ).join('');
+          noteMeta.hidden = false;
+        } else {
+          noteMeta.hidden = true;
+        }
+        
+        // Render content (allow HTML for rich text)
+        noteContent.innerHTML = note.content || '<p>No content</p>';
+        
+        // Show note, hide loading
+        loadingState.hidden = true;
+        sharedNote.hidden = false;
+      };
+      
+      /**
+       * Show error state
+       */
+      const showError = () => {
+        loadingState.hidden = true;
+        errorState.hidden = false;
+      };
+      
+      // Initialize
+      setTimeout(renderSharedNote, 300); // Small delay for loading effect
+    </script>
+  </body>
+</html>
