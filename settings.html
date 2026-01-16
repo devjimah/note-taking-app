@@ -171,6 +171,20 @@
             <div class="divider"></div>
             <ul class="settings-nav">
               <li>
+                <button
+                  class="settings-nav__item"
+                  data-setting="data-management"
+                >
+                  <img
+                    src="./assets/images/icon-restore.svg"
+                    alt=""
+                    class="settings-nav__icon"
+                    aria-hidden="true"
+                  />
+                  <span>Data Management</span>
+                </button>
+              </li>
+              <li>
                 <button class="settings-nav__item" data-setting="logout">
                   <img
                     src="./assets/images/icon-logout.svg"
@@ -548,6 +562,43 @@
                 </button>
               </div>
             </form>
+          </section>
+
+          <!-- Data Management Section -->
+          <section
+            class="settings-section"
+            id="dataManagementSection"
+            aria-labelledby="dataManagementTitle"
+            hidden
+          >
+            <div class="settings-section__header">
+              <h2 class="settings-section__title" id="dataManagementTitle">
+                Data Management
+              </h2>
+              <p class="settings-section__description">
+                Backup or restore your notes data.
+              </p>
+            </div>
+            <div class="settings-section__body">
+               <div style="display: flex; flex-direction: column; gap: 2rem;">
+                 <div>
+                    <h3 style="margin-bottom: 0.5rem; font-size: 1rem; font-weight: 500;">Export Data</h3>
+                    <p style="margin-bottom: 1rem; color: var(--color-text-secondary); font-size: 0.875rem;">Download a backup of all your notes as a JSON file.</p>
+                    <button class="btn btn--secondary" id="exportNotesBtn">
+                       Export Notes
+                    </button>
+                 </div>
+                 
+                 <div>
+                    <h3 style="margin-bottom: 0.5rem; font-size: 1rem; font-weight: 500;">Import Data</h3>
+                    <p style="margin-bottom: 1rem; color: var(--color-text-secondary); font-size: 0.875rem;">Restore notes from a JSON backup file. Existing notes with same ID will be skipped.</p>
+                    <input type="file" id="importNotesInput" accept=".json" style="display: none;">
+                     <button class="btn btn--secondary" id="importNotesBtn">
+                       Import Notes
+                    </button>
+                 </div>
+               </div>
+            </div>
           </section>
         </div>
       </main>

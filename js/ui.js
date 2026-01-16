@@ -25,6 +25,10 @@ export const renderNoteItem = (note, isActive = false) => {
     `<span class="note-item__tag">${escapeHTML(tag)}</span>`
   ).join('');
 
+  const categoryHTML = note.category && note.category !== 'Uncategorized' 
+      ? `<span class="note-item__tag note-item__tag--category" style="background-color: var(--color-primary-light); color: var(--color-primary); border: 1px solid var(--color-primary);">${escapeHTML(note.category)}</span>` 
+      : '';
+
   return `
     <article 
       class="note-item ${isActive ? 'note-item--active' : ''}" 
@@ -35,6 +39,7 @@ export const renderNoteItem = (note, isActive = false) => {
     >
       <h3 class="note-item__title">${escapeHTML(note.title) || 'Untitled'}</h3>
       <div class="note-item__tags" aria-label="Tags">
+        ${categoryHTML}
         ${tagsHTML}
       </div>
       <time class="note-item__date" datetime="${note.lastEdited}">
@@ -73,20 +78,37 @@ export const renderAllNotes = (notes, activeNoteId, container) => {
  * @param {Object} elements - Object containing DOM elements
  */
 export const renderNoteContent = (note, elements) => {
-  const { titleInput, tagsInput, lastEditedSpan, bodyTextarea } = elements;
+  const { titleInput, tagsInput, lastEditedSpan, bodyTextarea, categorySelect } = elements;
 
   if (!note) {
     if (titleInput) titleInput.value = '';
     if (tagsInput) tagsInput.value = '';
     if (lastEditedSpan) lastEditedSpan.textContent = '—';
-    if (bodyTextarea) bodyTextarea.value = '';
+    // Handle both textarea and contenteditable div
+    if (bodyTextarea) {
+      if (bodyTextarea.tagName === 'TEXTAREA') {
+        bodyTextarea.value = '';
+      } else {
+        bodyTextarea.innerHTML = '';
+      }
+    }
+    if (categorySelect) categorySelect.value = 'Uncategorized';
     return;
   }
 
   if (titleInput) titleInput.value = note.title || '';
   if (tagsInput) tagsInput.value = note.tags.join(', ');
   if (lastEditedSpan) lastEditedSpan.textContent = formatDate(note.lastEdited);
-  if (bodyTextarea) bodyTextarea.value = note.content || '';
+  // Handle both textarea and contenteditable div
+  if (bodyTextarea) {
+    if (bodyTextarea.tagName === 'TEXTAREA') {
+      bodyTextarea.value = note.content || '';
+    } else {
+      // For contenteditable, set innerHTML to preserve formatting
+      bodyTextarea.innerHTML = note.content || '';
+    }
+  }
+  if (categorySelect) categorySelect.value = note.category || 'Uncategorized';
 };
 
 /**
@@ -153,6 +175,39 @@ export const renderTagList = (tags, activeTag, container) => {
         <img src="./assets/images/icon-tag.svg" alt="" class="tag-item__icon" aria-hidden="true">
         <span class="tag-item__text">${escapeHTML(tag)}</span>
       </button>
+    </li>
+  `).join('');
+};
+
+/**
+ * Render category list in sidebar
+ * @param {Array} categories - Array of category strings
+ * @param {string} activeCategory - Currently active/selected category
+ * @param {HTMLElement} container - Container element for category list
+ */
+export const renderCategoryList = (categories, activeCategory, container) => {
+  if (!container) return;
+
+  if (categories.length === 0) {
+    container.innerHTML = '<li><span style="padding: 0.5rem; color: var(--color-text-secondary); font-size: 0.8rem;">No categories</span></li>';
+    return;
+  }
+
+  container.innerHTML = categories.map(category => `
+    <li style="display: flex; align-items: center; justify-content: space-between;">
+      <button 
+        class="nav-link ${category === activeCategory ? 'nav-link--active' : ''}" 
+        data-category="${escapeHTML(category)}"
+        aria-pressed="${category === activeCategory}"
+        style="flex: 1;"
+      >
+        <img src="./assets/images/icon-tag.svg" alt="" class="nav-link__icon" aria-hidden="true" style="width: 16px; height: 16px;">
+        <span class="nav-link__text">${escapeHTML(category)}</span>
+      </button>
+      ${category !== 'Uncategorized' ? `
+      <button class="btn btn--icon delete-category-btn" data-category="${escapeHTML(category)}" aria-label="Delete ${escapeHTML(category)}" style="padding: 0.25rem;">
+         <img src="./assets/images/icon-delete.svg" alt="" style="width: 14px; height: 14px; opacity: 0.5;">
+      </button>` : ''}
     </li>
   `).join('');
 };
