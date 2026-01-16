@@ -7,6 +7,7 @@ import * as storage from './storage.js';
 import * as themes from './themes.js';
 import * as noteManager from './noteManager.js';
 import * as ui from './ui.js';
+import * as exportImport from './exportImport.js';
 
 // DOM Elements
 const elements = {};
@@ -22,6 +23,7 @@ const initElements = () => {
   elements.colorThemeSection = document.getElementById('colorThemeSection');
   elements.fontThemeSection = document.getElementById('fontThemeSection');
   elements.changePasswordSection = document.getElementById('changePasswordSection');
+  elements.dataManagementSection = document.getElementById('dataManagementSection');
   elements.dataManagementSection = document.getElementById('dataManagementSection');
   
   // Theme inputs
@@ -39,6 +41,10 @@ const initElements = () => {
   
   // Change password form
   elements.changePasswordForm = document.getElementById('changePasswordForm');
+  
+  // Data management
+  elements.exportNotesBtn = document.getElementById('exportNotesBtn');
+  elements.importNotesInput = document.getElementById('importNotesInput');
   
   // Tag list
   elements.tagList = document.getElementById('tagList');
@@ -61,6 +67,9 @@ const showSection = (sectionId) => {
   if (elements.dataManagementSection) {
     elements.dataManagementSection.hidden = true;
   }
+  if (elements.dataManagementSection) {
+    elements.dataManagementSection.hidden = true;
+  }
   
   // Show selected section
   switch (sectionId) {
@@ -73,6 +82,11 @@ const showSection = (sectionId) => {
     case 'change-password':
       if (elements.changePasswordSection) {
         elements.changePasswordSection.hidden = false;
+      }
+      break;
+    case 'data-management':
+      if (elements.dataManagementSection) {
+        elements.dataManagementSection.hidden = false;
       }
       break;
     case 'data-management':
