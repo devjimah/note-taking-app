@@ -455,6 +455,32 @@ ol {
   color: var(--color-text-tertiary);
 }
 
+/* Categories Section */
+.categories-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-100);
+}
+
+.categories-section .nav-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-50);
+}
+
+.categories-section .nav-link {
+  font-size: var(--text-preset-5-size);
+}
+
+.categories-section .delete-category-btn {
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+}
+
+.categories-section li:hover .delete-category-btn {
+  opacity: 1;
+}
+
 .tag-list {
   display: flex;
   flex-direction: column;
@@ -566,6 +592,14 @@ ol {
   font-size: var(--text-preset-6-size);
   font-weight: var(--text-preset-6-weight);
   color: var(--color-text);
+}
+
+/* Category badge styling */
+.note-item__tag--category {
+  background-color: var(--color-blue-50);
+  color: var(--color-primary);
+  border: 1px solid var(--color-primary);
+  font-weight: 500;
 }
 
 .note-item__date {
